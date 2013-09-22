@@ -131,7 +131,7 @@ class User(AbstractUser, Timestamps, Locatable):
         """
         raise NotImplementedError
 
-    def checkout_item(self, quantity, item):
+    def checkout_item(self, item, quantity):
         """
         Checkout a `quantity` of an item. Should be called when a user is
         taking items from the common inventory.
@@ -143,36 +143,31 @@ class User(AbstractUser, Timestamps, Locatable):
         """
         raise NotImplementedError
 
-    def checkin_item(self, quantity, item):
+    def checkin_item(self, item, quantity):
         """
         Checkin a `quantity` of an item. Should be called when a user is
         putting items back into the common inventory.
 
-        :param quantity: amount to checkin
-        :type quantity: integer
         :param item: item to checkout
         :type quantity: whwn.Item
+        :param quantity: amount to checkin
+        :type quantity: integer
         """
         raise NotImplementedError
 
-    def give_item(self, quantity, item, recipient):
+    def give_item(self, recipient, item, quantity):
         """
         Give a `quantity` of an `item` to a `recipient`. The `recipient`
         must be in the same team as the current user.
 
-        :param quantity: amount to checkin
-        :type quantity: integer
+        :param recipient: user to give items to.
+        :type recipient: whwn.User
         :param item: item to checkout
-        :type quantity: whwn.Item
+        :type item: whwn.Item
+        :param quantity: amount to give
+        :type quantity: integer
         """
         raise NotImplementedError
-
-    def _get_items(self):
-        """
-        Current list of items this user has in his possession.
-        """
-        raise NotImplementedError
-    items = property(_get_items)
 
     def send_message(self, message):
         """
