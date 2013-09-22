@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 from django.db import models
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
@@ -52,8 +54,9 @@ class Item(Timestamps, Locatable):
     sku = models.ForeignKey('whwn.SKU')
     quantity = models.PositiveIntegerField()
     requested = models.BooleanField(default=False)
-    possessor = models.ForeignKey(settings.AUTH_USER_MODEL, null=True,
-                                    blank=True)
+    content_type = models.ForeignKey(ContentType, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True)
+    holder = generic.GenericForeignKey('content_type', 'object_id')
 
 
 class SKU(Timestamps):
@@ -61,13 +64,31 @@ class SKU(Timestamps):
     upc = models.CharField(null=True, blank=True, max_length=54)
     team = models.ForeignKey('whwn.Team')
     name = models.CharField(max_length=64)
+    category = models.ForeignKey('whwn.Category', null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        """
+        Generate a UPC on create.
+        """
+        raise NotImplementedError
+        return super(SKU, self).save(*args, **kwargs)
+
+
+    def __is_persisted(self):
+        """
+        Check if object has been created by checking if it has a pk.
+        """
+        if self.pk:
+            return True
+        else:
+            return False
 
 
 class Category(models.Model):
     """Categorize items"""
     name = models.CharField(max_length=32)
 
-    def item_names(self):
+    def items(self):
         """
         Return a unique list of item names in this category.
         """
@@ -86,10 +107,9 @@ class Team(Timestamps, Locatable):
     shares a common ground for interaction."""
     name = models.CharField(max_length=256)
     description = models.TextField(blank=True, null=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="owner",
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner',
                                 null=True)
-
-
+    items = generic.GenericRelation('whwn.Item')
 
 class User(AbstractUser, Timestamps, Locatable):
     """
@@ -100,6 +120,7 @@ class User(AbstractUser, Timestamps, Locatable):
     email_verified = models.BooleanField(default=False)
     phone_verified = models.BooleanField(default=False)
     team = models.ForeignKey('whwn.Team')
+    items = generic.GenericRelation('whwn.Item')
 
     def change_team(self, team):
         """
