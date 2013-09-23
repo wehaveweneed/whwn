@@ -73,8 +73,8 @@ class SKU(Timestamps):
     def save(self, *args, **kwargs):
         """Generate a UPC on create."""
         # TODO: Look into using python-barcode instead of uuid
-        if not self.__is_persisted():
-            import uuid; upc = str(uuid.uuid4())
+        if self.__is_persisted() is False:
+            import uuid; self.upc = str(uuid.uuid4())
         return super(SKU, self).save(*args, **kwargs)
 
     def __is_persisted(self):
@@ -186,11 +186,14 @@ class User(AbstractUser, Timestamps, Locatable):
             quantity = item.quantity
 
         if item.quantity < quantity:
-            raise exception("Requested quantity to checkin is over the quantity"
-                                "available.")
+            raise Exception("Requested quantity to checkin is over the quantity"
+                                " available.")
 
         item.quantity = item.quantity - quantity
         item.save()
+
+        if item is None:
+            return True
 
         # If Item w/ same SKU exists on recipient, just increment the count
         # else, we create a new item with the same SKU.
