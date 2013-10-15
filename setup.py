@@ -33,7 +33,7 @@ setup(
     name='We Have We Need',
     version=whwn.__version__,
     url='http://github.com/wehaveweneed/wehaveweneed',
-    tests_require=['pytest']
+    tests_require=['pytest'],
     install_requires=['Django==1.5.2'],
     cmdclass={'test': PyTest},
     description='Inventory Management System',
