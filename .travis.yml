@@ -4,9 +4,9 @@ python:
 install: 
   - pip install -q -r requirements/common.txt --use-mirrors
 before_script:
-  - psql -c "CREATE USER whwn WITH PASSWORD 'whwn'"
-  - psql -c "CREATE DATABASE wehaveweneed WITH OWNER whwn"
-  - psql -c "ALTER USER whwn CREATEDB"
+  - psql -c "CREATE USER whwn WITH PASSWORD 'whwn'" -U postgres
+  - psql -c "CREATE DATABASE wehaveweneed WITH OWNER whwn" -U postgres
+  - psql -c "ALTER USER whwn CREATEDB" -U postgres
   - python manage.py syncdb --noinput
   - python manage.py migrate --noinput
 script: 
