@@ -1,5 +1,6 @@
 from __future__ import print_function
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
 import io
 import os
 import sys
@@ -38,7 +39,7 @@ setup(
     cmdclass={'test': PyTest},
     description='Inventory Management System',
     long_description=long_description,
-    pacakages=['whwn'],
+    packages=['whwn'],
     include_package_data=True,
     platforms='any',
     test_suite='whwn.test.test_whwn',
