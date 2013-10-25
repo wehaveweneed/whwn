@@ -1,0 +1,14 @@
+language: python
+python: 
+  - "2.7"
+install: 
+  - pip install -q -r requirements/common.txt --use-mirrors
+  - pip install -q -r requirements/local.txt --use-mirrors
+before_script:
+  - psql -c "CREATE USER whwn WITH PASSWORD 'whwn'" -U postgres
+  - psql -c "CREATE DATABASE wehaveweneed WITH OWNER whwn" -U postgres
+  - psql -c "ALTER USER whwn CREATEDB" -U postgres
+  - python manage.py syncdb --noinput
+  - python manage.py migrate --noinput
+script: 
+  - python manage.py test whwn
