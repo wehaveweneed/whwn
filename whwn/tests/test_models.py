@@ -4,65 +4,66 @@ from model_mommy import mommy
 
 class UserTestCase(TestCase):
 
-    def setUp(self):
-        self.team_a = mommy.make('whwn.Team', name="Team A")
-        self.team_b = mommy.make('whwn.Team', name="Team B")
-        self.user_a = mommy.make('whwn.User', team=self.team_a)
-        self.user_b = mommy.make('whwn.User', team=self.team_b)
-        self.user_b2 = mommy.make('whwn.User', team=self.team_b)
-        self.item_a = mommy.make('whwn.Item', holder=self.team_a, quantity=5)
-        self.item_b = mommy.make('whwn.Item', quantity=1, holder=self.user_b)
-        self.sku_a = mommy.make('whwn.SKU')
-
     def test_change_team(self):
-        self.user_a.change_team(self.team_b)
-        self.assertEqual(self.user_a.team, self.team_b)
-
-    def test_checkout_item(self):
-        self.user_a.checkout_item(self.item_a)
-        skus = [i.sku for i in self.user_a.items]
-        self.assertIn(self.item_a.sku, skus)
-
-        item = mommy.make('whwn.Item', holder=self.team_a, quantity=10)
-        self.user_a.checkout_item(item, quantity=4)
-        skus = [i.sku for i in self.user_a.items]
-        self.assertIn(item.sku, skus)
-        skus = [i.sku for i in self.team_a.items]
-        self.assertIn(item.sku, skus)
-
-        x = self.user_a.items.get(object_id=item.id,
-                        content_object=ContentType.objects.get_for_model(item))
-        assertEqual(x.quantity, 4)
-        assertEqual(item.quantity, 6)
-
-
-    def test_checkin_item(self):
-        self.user_b.checkin_item(self.item_b)
-        self.assertEqual(self.item_b.holder, self.team_b)
+        a = mommy.make('whwn.Team')
+        b = mommy.make('whwn.Team')
+        u = mommy.make('whwn.User', team=a)
+        self.assertEqual(u.team, a)
+        u.change_team(b)
+        self.assertEqual(u.team, b)
 
     def test_give_item(self):
-        self.user_b.give_item(1, self.item_b, self.user_b2)
-        self.assertEqual(self.item_b.holder, self.user_b2)
+        t = mommy.make('whwn.Team')
+        u = mommy.make('whwn.User', team=t)
+        v = mommy.make('whwn.User', team=t)
+        i = mommy.make('whwn.Item', holder=u, quantity=10)
+
+        # Give 3 to team
+        res = u.give_item(t, i, 3)
+        self.assertEqual(res[0].holder, u)
+        self.assertEqual(res[0].quantity, 7)
+        self.assertEqual(res[1].holder, t)
+        self.assertEqual(res[1].quantity, 3)
+
+        # Give 3 to user v
+        res = u.give_item(v, res[0], 3)
+        self.assertEqual(res[0].quantity, 4)
+        self.assertEqual(res[1].holder, v)
+        self.assertEqual(res[1].quantity, 3)
+
+        # Give the 3 now on user v back to u
+        res1 = v.give_item(u, res[1], 3)
+        self.assertEqual(res1[1].holder, u)
+        self.assertEqual(res1[1].quantity, 7)
+
+        # Give the 7 on user u to the team
+        print res[1].quantity
+        res2 = u.give_item(t, res1[1], 7)
+        self.assertEqual(res2[0], None)
+        self.assertEqual(res2[1].holder, t)
+        self.assertEqual(res2[1].quantity, 10)
+
 
     def test_send_message_string(self):
-        message = self.user_a.send_message("Test message!")
-        self.assertIn(message, self.team_a.message_set)
+        t = mommy.make('whwn.Team')
+        u = mommy.make('whwn.User', team=t)
+        message = u.send_message_str("Test message!")
+        self.assertIn(message, t.message_set.all())
 
 
 class CategoryTestCase(TestCase):
 
-    def setUp(self):
-        self.cat_a = mommy.make('whwn.Category')
-        self.sku = mommy.make('whwn.SKU', category=self.cat_a)
-        self.item_a = mommy.make('whwn.Item', sku=self.sku)
-        self.item_b = mommy.make('whwn.Item', sku=self.sku)
-        self.item_c = mommy.make('whwn.Item', sku=self.sku)
-
     def test_get_items(self):
-        items = self.cat_a.items()
-        assertIn(self.item_a, items)
-        assertIn(self.item_b, items)
-        assertIn(self.item_c, items)
+        cat = mommy.make('whwn.Category')
+        sku = mommy.make('whwn.SKU', category=cat)
+        a = mommy.make('whwn.Item', sku=sku, quantity=5)
+        b = mommy.make('whwn.Item', sku=sku, quantity=10)
+        c = mommy.make('whwn.Item', sku=sku, quantity=12)
+
+        items = cat.items()
+        self.assertIn(a, items)
+        self.assertIn(b, items)
+        self.assertIn(c, items)
 
 class SKUTestCase(TestCase):
 

@@ -1,3 +1,7 @@
+from annoying.functions import get_object_or_None
+from copy import deepcopy
+import datetime
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
@@ -5,7 +9,6 @@ from django.contrib.contenttypes import generic
 from django.db import models
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
-import datetime
 
 
 # Abstract classes that are used by our models
@@ -41,10 +44,6 @@ class Locatable(models.Model):
     class Meta:
         abstract = True
 
-# Models
-# TODO: Check to make sure the current functionality works. It would probably
-#       make sense to check the test suite in tests/test_models.py is properly
-#       written and running that.
 
 class Item(Timestamps, Locatable):
     """An item represents a quantity of an object. The object type is
@@ -52,16 +51,18 @@ class Item(Timestamps, Locatable):
     and Users. Generally, items can only be passed within a single team.
     """
     sku = models.ForeignKey('whwn.SKU')
-    quantity = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField(default=1, blank=True)
     requested = models.BooleanField(default=False)
     content_type = models.ForeignKey(ContentType, null=True, blank=True)
     object_id = models.PositiveIntegerField(null=True)
-    holder = generic.GenericForeignKey('content_type', 'object_id')
+    holder = generic.GenericForeignKey()
 
-    def save(self, *args, **kwargs):
-        """Replacing save to automatically delete item if quantity is 0"""
-        if self.quantity is 0:
-            self.delete()
+    # TODO: This is causing behavior where all new Items created
+    # (at least by model_mommy) are getting deleted.
+    # def save(self, *args, **kwargs):
+    #     """Replacing save to automatically delete item if quantity is 0"""
+    #     if self.quantity == 0:
+    #         self.delete()
 
 
 class SKU(Timestamps):
@@ -93,7 +94,7 @@ class Category(models.Model):
         """
         Return a list of item names in this category.
         """
-        items = [sku.item_set for sku in self.sku_set]
+        items = [sku.item_set.all() for sku in self.sku_set.all()]
         return reduce(lambda x,y: x+y, items)
 
 
@@ -103,7 +104,12 @@ class Message(Timestamps):
     contents = models.TextField(default='')
     flagged = models.BooleanField(default=False)
     team = models.ForeignKey('whwn.Team')
-    
+
+    def save(self, *args, **kwargs):
+        """Set team to be author's team if not provided."""
+        if self.team is None:
+            self.team = self.author.team
+        return super(Message, self).save(*args, **kwargs)
 
 class Team(Timestamps, Locatable):
     """A collection of users. Used to indicate a group that
@@ -178,36 +184,60 @@ class User(AbstractUser, Timestamps, Locatable):
         :type item: whwn.Item
         :param quantity: amount to give
         :type quantity: integer
+        :returns: Item tuple (Item on Sender, Item on Reciever)
         """
         # TODO: Discuss the return type of this method.
 
-        # Handle negative quantity values
+        # If provided quantity is negative, we define it as being all items in
+        # this transaction
         if quantity < 0:
             quantity = item.quantity
 
+        # If available quantity is less than requested, we raise an exception.
         if item.quantity < quantity:
             raise Exception("Requested quantity to checkin is over the quantity"
                                 " available.")
 
-        item.quantity = item.quantity - quantity
-        item.save()
+        # If quantity is the same as the item quantity we just edit the holder value
+        # to the new recipient.
+        if quantity == item.quantity:
+            holder_type = ContentType.objects.get_for_model(recipient)
+            existing = get_object_or_None(Item, content_type__pk=holder_type.id, object_id=recipient.id)
 
-        if item is None:
-            return True
+            if existing is not None:
+                existing.quantity = existing.quantity + quantity
+                existing.save()
+                item.quantity = 0
+                item.save()
+                return (None, existing)
+            else:
+                item.holder = recipient
+                item.save()
+                return (None, item)
 
-        # If Item w/ same SKU exists on recipient, just increment the count
-        # else, we create a new item with the same SKU.
-
-        existing = Item.objects.get(holder=recipient, sku=item.sku)
-        if existing is not None:
-            existing.quantity = existing.quantity + quantity
-            existing.save()
+        # Else we do the math.
         else:
-            item.pk = None
-            item.quantity = quantity
-            item.holder = self.team
+            # We first subtract the quantity from the item.
+            item.quantity = item.quantity - quantity
             item.save()
-        return True
+
+            holder_type = ContentType.objects.get_for_model(recipient)
+            existing = get_object_or_None(Item, content_type__pk=holder_type.id, object_id=recipient.id)
+
+            if existing is not None:
+                existing.quantity = existing.quantity + quantity
+                existing.save()
+                return (item, existing)
+            else:
+                # We deepcopy the item so we can return it.
+                tmp = deepcopy(item)
+
+                # Changing the pk allows us to create a new db entry on save.
+                item.pk = None
+                item.quantity = quantity
+                item.holder = recipient
+                item.save()
+                return (tmp, item)
 
     def send_message_str(self, string):
         """
@@ -216,7 +246,8 @@ class User(AbstractUser, Timestamps, Locatable):
         :param message: message to send to teh team
         :type message: String
         """
-        msg=Message.objects.create(author=self, contents=string, team=self.team)
-        if msg.save():
-            return True
-        return False
+        msg = Message(author=self, contents=string, team=self.team)
+        msg.save()
+        if msg.pk:
+            return msg
+        raise Exception("Error saving message.")
