@@ -1,5 +1,6 @@
 from __future__ import print_function
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
 import io
 import os
 import sys
@@ -33,12 +34,12 @@ setup(
     name='We Have We Need',
     version=whwn.__version__,
     url='http://github.com/wehaveweneed/wehaveweneed',
-    tests_require=['pytest']
+    tests_require=['pytest'],
     install_requires=['Django==1.5.2'],
     cmdclass={'test': PyTest},
     description='Inventory Management System',
     long_description=long_description,
-    pacakages=['whwn'],
+    packages=['whwn'],
     include_package_data=True,
     platforms='any',
     test_suite='whwn.test.test_whwn',
