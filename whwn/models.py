@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db import models
+from django.db.models.signals import pre_delete
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 
@@ -57,13 +58,12 @@ class Item(Timestamps, Locatable):
     object_id = models.PositiveIntegerField(null=True)
     holder = generic.GenericForeignKey()
 
-    # TODO: This is causing behavior where all new Items created
-    # (at least by model_mommy) are getting deleted.
-    # def save(self, *args, **kwargs):
-    #     """Replacing save to automatically delete item if quantity is 0"""
-    #     if self.quantity == 0:
-    #         self.delete()
+def Item_pre_delete(sender, instance, **kwargs):
+    if instance.quantity > 0:
+        raise Exception("Item has a positive quantity, and should not be",
+                "deleted.")
 
+pre_delete.connect(Item_pre_delete, sender=Item)
 
 class SKU(Timestamps):
     upc = models.CharField(null=True, blank=True, max_length=54)
