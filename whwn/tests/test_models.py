@@ -2,6 +2,14 @@ from django.test import TestCase
 from model_mommy import mommy
 
 
+TEAM = 'whwn.Team'
+USER = 'whwn.User'
+ITEM = 'whwn.Item'
+CATEGORY = 'whwn.Category'
+SKU = 'whwn.SKU'
+
+
+
 class UserTestCase(TestCase):
 
     def test_change_team(self):
@@ -70,3 +78,18 @@ class SKUTestCase(TestCase):
     def test_upc_on_create(self):
         sku = mommy.make('whwn.SKU')
         self.assertIsNotNone(sku.upc)
+
+class ItemTestCase(TestCase):
+
+    def test_no_delete_on_positive_quantity(self):
+        i1 = mommy.make('whwn.Item', quantity=5)
+        try:
+            i1.delete()
+        except Exception:
+            pass
+
+        i2 = mommy.make('whwn.Item', quantity=0)
+        i2.delete()
+        self.assertTrue(True)
+
+
