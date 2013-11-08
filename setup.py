@@ -35,7 +35,7 @@ setup(
     version=whwn.__version__,
     url='http://github.com/wehaveweneed/wehaveweneed',
     tests_require=['pytest'],
-    install_requires=['Django==1.5.2'],
+    install_requires=['Django==1.6'],
     cmdclass={'test': PyTest},
     description='Inventory Management System',
     long_description=long_description,
