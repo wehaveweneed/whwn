@@ -1,2 +1,0 @@
-model_mommy==1.1
-
