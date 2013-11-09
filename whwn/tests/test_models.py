@@ -1,13 +1,6 @@
 from django.test import TestCase
+from django.test import TransactionTestCase
 from model_mommy import mommy
-
-
-TEAM = 'whwn.Team'
-USER = 'whwn.User'
-ITEM = 'whwn.Item'
-CATEGORY = 'whwn.Category'
-SKU = 'whwn.SKU'
-
 
 
 class UserTestCase(TestCase):
@@ -81,7 +74,7 @@ class SKUTestCase(TestCase):
         sku = mommy.make('whwn.SKU')
         self.assertIsNotNone(sku.upc)
 
-class ItemTestCase(TestCase):
+class ItemTestCase(TransactionTestCase):
 
     def test_no_delete_on_positive_quantity(self):
         i1 = mommy.make('whwn.Item', quantity=5)
