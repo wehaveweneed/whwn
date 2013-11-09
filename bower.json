@@ -1,0 +1,13 @@
+{
+  "name": "wehaveweneed",
+  "description": "development in progress",
+  "version": "0.0.1",
+  "dependencies": {
+    "requirejs": "*",
+    "requirejs-text": "*",
+    "jquery": "*",
+    "underscore": "*",
+    "backbone": "*",
+    "mustache": "*"
+  }
+}

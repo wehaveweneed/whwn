@@ -1,10 +1,9 @@
-from __future__ import print_function
-from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 import io
 import os
 import sys
 import whwn
+from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -35,7 +34,7 @@ setup(
     version=whwn.__version__,
     url='http://github.com/wehaveweneed/wehaveweneed',
     tests_require=['pytest'],
-    install_requires=['Django==1.5.2'],
+    install_requires=['Django==1.6'],
     cmdclass={'test': PyTest},
     description='Inventory Management System',
     long_description=long_description,

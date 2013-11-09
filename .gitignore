@@ -1,3 +1,9 @@
 *.pyc
 *.egg
 *.egg-info
+whwn/public/*
+node_modules/
+venv/
+served/
+static/components/
+static/compiled/

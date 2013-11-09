@@ -1,0 +1,16 @@
+{
+  "name": "wehaveweneed",
+  "description": "development in progress",
+  "version": "0.0.1",
+  "author": "Team We Have We Need",
+  "devDependencies": {
+    "bower": "*",
+    "grunt": "~0.4.1",
+    "grunt-contrib-requirejs": "*",
+    "grunt-clean": "*",
+    "node-sass": "~0.7.0"
+  },
+  "scripts": {
+    "setup": "npm install && bower install"
+  }
+}
