@@ -116,9 +116,17 @@ class Team(Timestamps, Locatable):
     shares a common ground for interaction."""
     name = models.CharField(max_length=256)
     description = models.TextField(blank=True, null=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='owner',
-                                null=True)
     items = generic.GenericRelation('whwn.Item')
+
+
+class Membership(Timestamps):
+    user = models.ForeignKey('whwn.User', related_name="memberships")
+    team = models.ForeignKey('whwn.Team', related_name="memberships")
+    is_admin = models.BooleanField(default=False)
+    read_only = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("user", "team")
 
 
 class User(AbstractUser, Timestamps, Locatable):
@@ -127,22 +135,46 @@ class User(AbstractUser, Timestamps, Locatable):
     phone_number = models.CharField(max_length=32, blank=True, null=True)
     email_verified = models.BooleanField(default=False)
     phone_verified = models.BooleanField(default=False)
-    team = models.ForeignKey('whwn.Team')
     items = generic.GenericRelation('whwn.Item')
 
-    def change_team(self, team):
+    def join_team(self, team):
         """
-        Leave current team for a new `team`
+        Join a team
 
         :param team: team that the user is associated with
         :type team: whwn.Team
+        :returns: New Membership
         """
-        # TODO: Discuss the return type for this method.
-        self.team = team
-        if self.team.save():
-            return self.team
-        else:
+        m = Membership.objects.create(user=self, team=team)
+        m.save()
+        if m.pk:
             return None
+        else:
+            raise Exception("Joining team failed. Check that your arguments are as expected.")
+
+    def leave_team(self, team):
+        """
+        Leave a team
+
+        :param team: team that the user is leaving from.
+        :type team: whwn.Team
+        :returns: None
+        """
+        m = get_object_or_None(Membership, user=self, team=team)
+        if m is None:
+            raise Exception("The user cannot leave a team of which he is not",
+                    "already a member.")
+        else:
+            m.delete()
+            return None
+
+    def teams(self):
+        """
+        Return QuerySet of teams
+        """
+
+        return Team.objects.filter(memberships__user=self)
+    teams = property(teams)
 
     def checkout_item(self, item, quantity=-1):
         """
@@ -239,15 +271,20 @@ class User(AbstractUser, Timestamps, Locatable):
                 item.save()
                 return (tmp, item)
 
-    def send_message_str(self, string):
+    def send_message_str(self, team, string):
         """
         Send a `string` to the team as a Message.
 
         :param message: message to send to teh team
         :type message: String
         """
-        msg = Message(author=self, contents=string, team=self.team)
-        msg.save()
-        if msg.pk:
-            return msg
-        raise Exception("Error saving message.")
+        m = get_object_or_None(Membership, team=team, user=self)
+        if m:
+            msg = Message(author=self, contents=string, team=m.team)
+            msg.save()
+            if msg.pk:
+                return msg
+            raise Exception("Error saving message.")
+        else:
+            raise Exception("This user is not a member of the intended recipient",
+                    "team.")

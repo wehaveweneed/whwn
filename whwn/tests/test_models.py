@@ -12,18 +12,21 @@ SKU = 'whwn.SKU'
 
 class UserTestCase(TestCase):
 
-    def test_change_team(self):
+    def test_join_leave_teams(self):
         a = mommy.make('whwn.Team')
         b = mommy.make('whwn.Team')
-        u = mommy.make('whwn.User', team=a)
-        self.assertEqual(u.team, a)
-        u.change_team(b)
-        self.assertEqual(u.team, b)
+        u = mommy.make('whwn.User')
+        u.join_team(a)
+        self.assertIn(a, u.teams)
+        u.join_team(b)
+        self.assertIn(b, u.teams)
+        u.leave_team(a)
+        self.assertNotIn(a, u.teams)
 
     def test_give_item(self):
         t = mommy.make('whwn.Team')
-        u = mommy.make('whwn.User', team=t)
-        v = mommy.make('whwn.User', team=t)
+        u = mommy.make('whwn.User'); v = mommy.make('whwn.User')
+        u.join_team(t); v.join_team(t)
         i = mommy.make('whwn.Item', holder=u, quantity=10)
 
         # Give 3 to team
@@ -45,7 +48,6 @@ class UserTestCase(TestCase):
         self.assertEqual(res1[1].quantity, 7)
 
         # Give the 7 on user u to the team
-        print res[1].quantity
         res2 = u.give_item(t, res1[1], 7)
         self.assertEqual(res2[0], None)
         self.assertEqual(res2[1].holder, t)
@@ -54,8 +56,8 @@ class UserTestCase(TestCase):
 
     def test_send_message_string(self):
         t = mommy.make('whwn.Team')
-        u = mommy.make('whwn.User', team=t)
-        message = u.send_message_str("Test message!")
+        u = mommy.make('whwn.User'); u.join_team(t)
+        message = u.send_message_str(t, "Test message!")
         self.assertIn(message, t.message_set.all())
 
 
