@@ -30,7 +30,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-AUTH_USER_MODEL = 'whwn.models.User'
+AUTH_USER_MODEL = 'whwn.User'
 
 DATABASES = {
     'default': {
