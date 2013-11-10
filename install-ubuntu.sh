@@ -25,8 +25,7 @@ mkvirtualenv --no-site-packages --distribute whwn_env
 workon whwn_env
 
 #INstall the requirements
-pip install -q -r requirements/common.txt --use-mirrors
-pip install -q -r requirements/local.txt --use-mirrors
+pip install -q -r requirements.txt --use-mirrors
 
 #create database with postgres
 #make sure your config for postgres user is NOT peer but instead trust
