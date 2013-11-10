@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/zsh
 
 # install.sh - helping people bootstrap their environments for whwn dev
 
@@ -27,11 +27,18 @@ elif [[ $OSTYPE =~ linux-gnu ]] ; then
   fi
 fi
 
+# export current dudes environment so ./install.sh has the same environment
+if [[ -f $HOME/.bashrc ]] ; then
+  . $HOME/.bashrc
+fi
+if [[ -f $HOME/.zshrc ]] ; then
+  . $HOME/.zshrc
+fi
+
 echo ""
 
 echo "${bldwht}You're going to need Python 2.7 to run this baby... ${txtrst}"
 PYTHON_VERSION=`python -c "import sys; sys.stdout.write(sys.version)" | head -n1 | grep -oe "\d\.\d\.\d"`
-sleep 1
 if [[ $PYTHON_VERSION =~ ^[[:digit:]].[[:digit:]].[[:digit:]]$ ]] ; then
   echo "    ${bldgrn}Version $PYTHON_VERSION found. Nice.${txtrst}"
 else
@@ -43,8 +50,7 @@ echo ""
 
 echo "${bldwht}We use PostgreSQL as our main data store. Let's see if you have it... ${txtrst}"
 POSTGRESQL_VERSION=`psql --version | cut -d" " -f3`
-sleep 1
-if [[ $POSTGRESQL_VERSION =~  ^[[:digit:]].[[:digit:]].[[:digit:]]$ ]] ; then
+if [[ $POSTGRESQL_VERSION =~ ^[[:digit:]].[[:digit:]].[[:digit:]]$ ]] ; then
   echo "    ${bldgrn}Version $POSTGRESQL_VERSION found. Hot stuff.${txtrst}"
 else
   echo "    ${bldred}You will need to have PostgreSQL installed and running to continue.${txtrst}"
@@ -55,7 +61,6 @@ echo ""
 
 echo "${bldwht}You're going to need pip to install virtualenv to keep your Python workspace clean...${txtrst}"
 PIP_VERSION=`pip -V | cut -d" " -f2`
-sleep 1
 if [[ $PIP_VERSION =~ ^[[:digit:]].[[:digit:]].[[:digit:]]$ ]] ; then
   echo "    ${bldgrn}Version $PIP_VERSION found. Sweet.${txtrst}"
 else
@@ -66,12 +71,8 @@ fi
 echo ""
 
 echo "${bldwht}Now that you have pip, you're going to need virtualenv and virtualenvwrapper!${txtrst}"
-sleep 1
-if [[ `pip list | grep -oe "^virtualenv\s"`  -eq "virtualenv" ]] ; then
-  echo "    ${bldgrn}Perfect, you've installed virtualenv.${txtrst}"
-  if [[ `pip list | grep -oe '^virtualenvwrapper\s'` -eq "virtualenvwrapper" ]] ; then
-    echo "    ${bldgrn}You've got virtualenvwrapper too. Awesome.${txtrst}"
-  fi
+if [[ -n $(pip list | grep -oe "^virtualenv\s") ]] ; then
+  echo "    ${bldgrn}Perfect, you have virtualenv.${txtrst}"
 else
   echo "    ${bldred}Looks like you have some work to do. ${txtrst} "
   echo "    Please install virtualenv and virtualenvwrapper using:"
@@ -81,37 +82,41 @@ fi
 
 echo ""
 
+touch ~/.profile
 echo "${bldwht}Checking to see if virtualenvwrapper is set up properly.${txtrst}"
-sleep 1
-if [[ ! -n $(echo $WORKON_HOME) ]] ; then
+if [[ -z $(echo $WORKON_HOME) ]] ; then
   echo "    Setting it up for you for you. Running: "
   echo '        echo "export WORKON_HOME=\$HOME/.virtualenvs" >> ~/.profile'
   # Doing the line add
   echo "export WORKON_HOME=\$HOME/.virtualenvs" >> ~/.profile
-  if [[ ! -n $(which virtualenvwrapper.sh) ]] ; then
-    echo '        echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.profile'
-    # Doing the line add
-    echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.profile
-  fi
-  if [[ ! -n $(echo $PIP_VIRTUALENV_BASE) ]] ; then
-    echo '        echo "export PIP_VIRTUALENV_BASE=\$WORKON_HOME" >> ~/.profile'
-    # Doing the line add
-    echo "export PIP_VIRTUALENV_BASE=\$WORKON_HOME" >> ~/.profile
-  fi
-  if [[ ! -n $(echo $PIP_RESPECT_VIRTUALENV) ]] ; then
-    echo '        echo "export PIP_RESPECT_VIRTUALENV=true" >> ~/.profile'
-    # Doing the line add
-    echo "export PIP_RESPECT_VIRTUALENV=true" >> ~/.profile
-  fi
 fi
-source ~/.profile
+if [[ $(cat ~/.profile | grep -c "virtualenvwrapper.sh") -eq 0 ]] ; then
+  echo '        echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.profile'
+  # Doing the line add
+  echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.profile
+fi
+if [[ -z $(echo $PIP_VIRTUALENV_BASE) ]] ; then
+  echo '        echo "export PIP_VIRTUALENV_BASE=\$WORKON_HOME" >> ~/.profile'
+  # Doing the line add
+  echo "export PIP_VIRTUALENV_BASE=\$WORKON_HOME" >> ~/.profile
+fi
+if [[ -z $(echo $PIP_RESPECT_VIRTUALENV) ]] ; then
+  echo '        echo "export PIP_RESPECT_VIRTUALENV=true" >> ~/.profile'
+  # Doing the line add
+  echo "export PIP_RESPECT_VIRTUALENV=true" >> ~/.profile
+fi
+if [[ -z $(echo $VIRTUALENVWRAPPER_PYTHON) ]] ; then
+  echo "        echo \"export VIRTUALENVWRAPPER_PYTHON=`which python`\" >> ~/.profile"
+  # Doing the line add
+  echo "export VIRTUALENVWRAPPER_PYTHON=`which python`" >> ~/.profile
+fi
 echo "    ${bldgrn}Virtualenvwrapper is now setup properly. Yes!${txtrst}"
+. ~/.profile
 
 echo ""
 
 echo "${bldwht}We use NodeJS and npm to bootstrap our javascript packages.${txtrst}"
-sleep 1
-if [[ -n $(which npm) ]] ; then
+if [ -n $(which npm) ] ; then
   echo "    ${bldgrn}Npm installation found, moving on!.${txtrst}"
 else
   echo "${bldred}Install version 0.10.* of Node to get npm${txtrst}"
@@ -121,27 +126,35 @@ fi
 echo ""
 
 sleep 1
-if [[ ! `echo $VIRTUAL_ENV` =~ whwn ]] ; then
-  # Instruct to create a virtualenv
-  echo "${bldrd}You're going to need a virtualenv so that you don't crowd your default 
-  system packages.${txtrst}"
 
-  echo "${bldwht}Please run the following to create a whwn environment and: ${txtrst}"
-  echo "    ${bldylw}mkvirtualenv --no-site-packages --distribute whwn"
-  echo "    workon whwn${txtrst}"
-  exit 1
-else
+if [[ `echo $VIRTUAL_ENV` =~ whwn ]] ; then
   echo "${bldwht}Cool, we'll do the rest from here in this order: ${txtrst}"
   echo "    ${bldblu}1. Use pip to install our Django project requirements"
   echo "    2. Setup our PostgreSQL database to properly work"
   echo "    3. Sync and Migrate our Django project with our PostgreSQL Database"
   echo "    4. Install the requisite javascript packages using npm and bower.${txtrst}"
+else
+  # Instruct to create a virtualenv
+  echo "${bldrd}You're going to need a virtualenv so that you don't crowd your default 
+  system packages.${txtrst}"
+
+  echo "${bldwht}Please run the following to create a whwn environment and: ${txtrst}"
+  echo "    ${bldylw}source ~/.profile    # Reload your ~./profile settings we just added."
+  echo "    mkvirtualenv --no-site-packages --distribute whwn"
+  echo "    workon whwn${txtrst}"
+  echo ""
+  echo "${bldwht}Then rerun ${bldblu}install.sh${bldwht} to continue${txtrst}"
+  exit 1
 fi
 
 sleep 3
 
-echo "${bldylw}Running:${bldwht} pip install -q -r requirements.txt --use-mirrors${txtrst}"
-pip install -q -r requirements.txt --use-mirrors
+echo ""
+echo "${bldylw}Running:${bldwht} pip install -r requirements.txt${txtrst}"
+
+workon whwn # load our virtualenv so pip installs into it.
+pip install -r requirements.txt
+echo ""
 echo "${bldylw}Running:${bldwht} npm run-script setup${txtrst}"
 npm run-script setup
 echo "${bldylw}Running:${bldwht} psql -c \"CREATE USER whwn WITH PASSWORD 'whwn'\" -U postgres
@@ -150,31 +163,17 @@ echo "${bldylw}Running:${bldwht} psql -c \"CREATE USER whwn WITH PASSWORD 'whwn'
 psql -c "CREATE USER whwn WITH PASSWORD 'whwn'" -U postgres
 psql -c "CREATE DATABASE wehaveweneed WITH OWNER whwn" -U postgres
 psql -c "ALTER USER whwn CREATEDB" -U postgres
+
+echo ""
 echo "${bldylw}Running:${bldwht} python manage.py syncdb --noinput${txtrst}"
 python manage.py syncdb --noinput
+
+echo ""
 echo "${bldylw}Running:${bldwht} python manage.py migrate --noinput${txtrst}"
 python manage.py migrate --noinput
 
 echo "${bldgrn}Congratulations! Everything is setup! Please peruse the output of this script to know exactly
 what was run.${txtrst}"
 exit 0
-  
 
-# mkvirtualenv --no-site-packages --distribute whwn_env
-# 
-# workon whwn_env
-# 
-# #INstall the requirements
-# pip install -q -r requirements.txt --use-mirrors
-# 
-# #create database with postgres
-# #make sure your config for postgres user is NOT peer but instead trust
-# #go to /etc/postgresql/VERSION/main/pg_hba.conf and replace it
-# #then reload psql, /etc/init.d/postgresql reload
-
-#sync and migrate
-#python manage.py syncdb --noinput
-#python manage.py migrate --noinput
-
-#run the tests
-#python manage.py test whwn
+# DONE! YIPEE!
