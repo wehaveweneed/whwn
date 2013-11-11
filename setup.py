@@ -7,16 +7,14 @@ from setuptools.command.test import test as TestCommand
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-def read(*filenames, **kwargs):
-    encoding = kwargs.get('encoding', 'utf-8')
-    sep = kwargs.get('sep', '\n')
-    buf = []
-    for filename in filenames:
-        with io.open(filename, encoding=encoding) as f:
-            buf.append(f.read())
-    return sep.join(buf)
+with open('README.md') as readme:
+    long_description = readme.read()
 
-long_description = read('README.md')
+with open('requirements.txt') as reqs:
+    install_requires = [
+        line for line in reqs.read().split('\n') if (line and not 
+                                                     line.startswith('--'))
+    ]
 
 class PyTest(TestCommand):
     def finalize_options(self):
@@ -34,24 +32,16 @@ setup(
     version=whwn.__version__,
     url='http://github.com/wehaveweneed/wehaveweneed',
     tests_require=['pytest'],
-    install_requires=['Django==1.6'],
     cmdclass={'test': PyTest},
     description='Inventory Management System',
     long_description=long_description,
+    install_requires=install_requires,
     packages=['whwn'],
     include_package_data=True,
-    platforms='any',
     test_suite='whwn.test.test_whwn',
     classifiers = [
-        'Programming Language :: Python',
-        'Development Status :: 2 - Pre-Alpha',
-        'Natural English :: English',
         'Environment :: Web Environment',
-        'Intended Audience :: Healthcare Industry',
-        'Operating System :: OS Independent',
-        'Topic :: Communications :: Chat',
-        'Topic :: Internet :: WWW/HTTP :: Site Management',
-        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+        'Framework :: Django',
     ],
     extras_require={
         'testing': ['pytest'],
