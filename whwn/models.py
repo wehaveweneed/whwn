@@ -1,6 +1,5 @@
 from annoying.functions import get_object_or_None
 from copy import deepcopy
-import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -10,43 +9,10 @@ from django.db import models
 from django.db.models.signals import pre_delete
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
+from whwn.util.models import TimestampedModel, LocatableModel
 
 
-# Abstract classes that are used by our models
-
-class Timestamps(models.Model):
-    """Used to attach *created at* and *updated at* timestamps for any model class
-    that mixes this in."""
-    created_at = models.DateTimeField(auto_now_add=True,
-                                        default=datetime.datetime.now)
-    updated_at = models.DateTimeField(auto_now=True,
-                                        default=datetime.datetime.now)
-    class Meta:
-        abstract = True
-
-
-class Locatable(models.Model):
-    """Give *latitude* and *longitude* properties to any model that mixes
-    this in."""
-    latitude = models.DecimalField(max_digits=8, decimal_places=3, null=True,
-                                    blank=True)
-    longitude = models.DecimalField(max_digits=8, decimal_places=3, null=True,
-                                    blank=True)
-    def _get_point(self):
-        if self.latitude and self.longitude:
-            return Point(self.longitude, self.latitude)
-        else:
-            return Point(0, 0)
-    def _set_point(self, point):
-        self.latitude = point.y
-        self.longitude = point.x
-        self.save()
-    point = property(_get_point, _set_point)
-    class Meta:
-        abstract = True
-
-
-class Item(Timestamps, Locatable):
+class Item(TimestampedModel, LocatableModel):
     """An item represents a quantity of an object. The object type is
     determined by the sku association. Items can be held by both Teams
     and Users. Generally, items can only be passed within a single team.
@@ -65,7 +31,7 @@ def Item_pre_delete(sender, instance, **kwargs):
 
 pre_delete.connect(Item_pre_delete, sender=Item)
 
-class SKU(Timestamps):
+class SKU(TimestampedModel):
     upc = models.CharField(null=True, blank=True, max_length=54)
     team = models.ForeignKey('whwn.Team')
     name = models.CharField(max_length=64)
@@ -98,7 +64,7 @@ class Category(models.Model):
         return reduce(lambda x,y: x+y, items)
 
 
-class Message(Timestamps):
+class Message(TimestampedModel):
     """Keeps track of conversation between the system and users"""
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
     contents = models.TextField(default='')
@@ -111,7 +77,7 @@ class Message(Timestamps):
             self.team = self.author.team
         return super(Message, self).save(*args, **kwargs)
 
-class Team(Timestamps, Locatable):
+class Team(TimestampedModel, LocatableModel):
     """A collection of users. Used to indicate a group that
     shares a common ground for interaction."""
     name = models.CharField(max_length=256)
@@ -119,7 +85,7 @@ class Team(Timestamps, Locatable):
     items = generic.GenericRelation('whwn.Item')
 
 
-class Membership(Timestamps):
+class Membership(TimestampedModel):
     user = models.ForeignKey('whwn.User', related_name="memberships")
     team = models.ForeignKey('whwn.Team', related_name="memberships")
     is_admin = models.BooleanField(default=False)
@@ -129,7 +95,7 @@ class Membership(Timestamps):
         unique_together = ("user", "team")
 
 
-class User(AbstractUser, Timestamps, Locatable):
+class User(AbstractUser, TimestampedModel, LocatableModel):
     """This is our user class. Reference Django 1.5's AbstractUser for the
     complete picture of what a User object is capable of."""
     phone_number = models.CharField(max_length=32, blank=True, null=True)
