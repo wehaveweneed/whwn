@@ -74,17 +74,13 @@ STATIC_ROOT = os.path.join(PROJECT_PATH, "public/static")
 # Use compressed assets
 # COMPRESS_ENABLED = True
 
-COMPRESS_PRECOMPILERS = (
-    ('text/x-scss', 'sass --scss {infile} {outfile}'),
-)
-
-COMPRESS_ROOT = os.path.join(PROJECT_PATH, 'static/')
-COMPRESS_OUTPUT_DIR = 'compiled/'
-
-COMPRESS_CSS_FILTERS = [
-    'compressor.filters.css_default.CssAbsoluteFilter',
-    'compressor.filters.cssmin.CSSMinFilter',
-]
+# COMPRESS_ROOT = os.path.join(PROJECT_PATH, 'static/')
+# COMPRESS_OUTPUT_DIR = 'compiled/'
+# 
+# COMPRESS_CSS_FILTERS = [
+#     'compressor.filters.css_default.CssAbsoluteFilter',
+#     'compressor.filters.cssmin.CSSMinFilter',
+# ]
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -96,7 +92,7 @@ STATICFILES_FINDERS = (
 )
 
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_PATH, "client"),
+    os.path.join(PROJECT_PATH, "static/compiled"),
 )
 
 TEMPLATE_DIRS = (
@@ -140,7 +136,7 @@ INSTALLED_APPS = (
     'south',
     'whwn',
     'tastypie',
-    'compressor',
+    # 'compressor',
 )
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
