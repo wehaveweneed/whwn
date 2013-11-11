@@ -46,9 +46,9 @@ fi
 
 # We want to make sure this script runs in the same environment
 # that the user has so we wanna source the files
-if [ -f $HOME/.bashrc ] ; then . $HOME/.bashrc; fi
-if [ -f $HOME/.zshrc ] ; then . $HOME/.zshrc; fi
-if [ -f $HOME/.profile ] ; then . $HOME/.profile; fi
+if [ -f $HOME/.bashrc ] ; then . $HOME/.bashrc > /dev/null 2>&1 ; fi
+if [ -f $HOME/.zshrc ] ; then . $HOME/.zshrc > /dev/null 2>&1 ; fi
+if [ -f $HOME/.profile ] ; then . $HOME/.profile > /dev/null 2>&1 ; fi
 
 echo ""
 
@@ -75,12 +75,16 @@ echo ""
 # TODO: Platform specific installation instructions.
 
 echobw "We use PostgreSQL as our main data store. Let's see if you have it... "
-POSTGRESQL_VERSION=`psql --version | cut -d" " -f3`
+POSTGRESQL_VERSION=`psql --version | head -n1 | cut -d" " -f3`
 if [[ $POSTGRESQL_VERSION =~ ^[[:digit:]].[[:digit:]].[[:digit:]]$ ]] ; then
   echobg "    Version $POSTGRESQL_VERSION found. Hot stuff."
 else
-  echobr "    You will need to have PostgreSQL installed and running to continue."
-  exit 1
+  if hash psql 2>/dev/null ; then
+	echobr "    You haven't installed PostgreSQL. Please install it to continue!."
+  else
+	echobr "    Looks like you've installed PostgreSQL but it isn't running! Please start it to continue!."
+  fi
+	exit 1
 fi
 
 echo ""
@@ -98,15 +102,18 @@ fi
 
 echo ""
 
-# Step 4: Check for an insatllation of virtualenv and virtualenvwrapper
+# Step 4: Check for an insatllation of virtualenv and virtualenvwrapper unless
+# we're already in the virtualenv
 echobw "Now that you have pip, you're going to need virtualenv and virtualenvwrapper!"
-if [[ -n $(pip list | grep -oe "^virtualenv\s") ]] ; then
-  echobg "    Perfect, you have virtualenv."
-else
-  echobr "    Looks like you have some work to do. "
-  echoby "    Please install virtualenv and virtualenvwrapper using:"
-  echoby "        sudo pip install virtualenv virtualenvwrapper"
-  exit 1
+if [[ -z $(echo VIRTUAL_ENV) ]] ; then
+  if [[ -n $(pip list | grep -oe "^virtualenv\s") ]] ; then
+    echobg "    Perfect, you have virtualenv."
+  else
+    echobr "    Looks like you have some work to do. "
+    echoby "    Please install virtualenv and virtualenvwrapper using:"
+    echoby "        sudo pip install virtualenv virtualenvwrapper"
+    exit 1
+  fi
 fi
 
 echo ""
@@ -148,7 +155,7 @@ echo ""
 
 # Step 6: Check for an installation of NodeJS and NPM
 echobw "We use NodeJS and npm to bootstrap our javascript packages."
-if [ -n $(which npm) ] ; then
+if type npm >/dev/null 2>&1 ; then
   echobg "    Npm installation found, moving on!"
 else
   echobr "    Install version 0.10.* of Node to get npm."
@@ -169,17 +176,24 @@ if [[ `echo $VIRTUAL_ENV` =~ whwn ]] ; then
   echobb "    3. Sync and Migrate our Django project with our PostgreSQL Database"
   echobb "    4. Install the requisite javascript packages using npm and bower."
 else
-  # Instruct to create a virtualenv
-  echobr "You're going to need a virtualenv so that you don't crowd your default 
-  system packages."
 
-  echobw "Please run the following to create a whwn environment and: "
-  echoby "    source ~/.profile    # Reload your ~./profile settings we just added."
-  echoby "    mkvirtualenv --no-site-packages --distribute whwn"
-  echoby "    workon whwn"
-  echo ""
-  echobw "Then rerun ${bldblu}install.sh${bldwht} to continue."
-  exit 1
+	. ~/.profile
+  if [[ -n $(lsvirtualenv | grep whwn) ]] ; then
+		echobr "You're going to need to get into your virtualenv."
+    echoby "    Please run: workon whwn"
+	else
+	  # Instruct to create a virtualenv
+	  echobr "You're going to need a virtualenv so that you don't crowd your default 
+	  system packages."
+
+	  echobw "Please run the following to create a whwn environment and: "
+	  echoby "    source ~/.profile    # Reload your ~./profile settings we just added."
+	  echoby "    mkvirtualenv --no-site-packages --distribute whwn"
+	  echoby "    workon whwn"
+	  echo ""
+	  echobw "Then rerun ${bldblu}install.sh${bldwht} to continue."
+	fi
+	exit 1
 fi
 
 sleep 3
@@ -197,21 +211,23 @@ npm run-script setup
 echo ""
 
 # We're going to setup postgres for them.
+# Make sure PG_HOST is set or else we can't access postgres
+if [ -z $(echo PG_HOST) ] ; then 
+   export PG_HOST=localhost
+fi
 
-echoby "Running:${bldwht} psql -c \"CREATE USER whwn WITH PASSWORD 'whwn'\" -U postgres"
-echobw "         psql -c \"CREATE DATABASE wehaveweneed WITH OWNER whwn\" -U postgres"
-echobw "         psql -c \"ALTER USER whwn CREATEDB\" -U postgres"
-
-echo ""
-if [[ $PLATFORM == "osx" ]] ; then
-   echoby "Seems like your platform is osx, which doesn't have a 'postgres' user on most"
-   echoby "default installations. Going to try to create the 'postgres' user for you."
+if [ -z $(psql -c "\du" | grep postgres | cut -d" " -f2) ] ; then
+   echoby "Seems like you don't have a 'postgres' user. Going to try to create it for you."
    echoby "Running: ${bldwht}createdb"
    echobw "         psql -c \"CREATE USER postgres SUPERUSER CREATEROLE CREATEDB\""
 
    createdb
    psql -c "CREATE USER postgres SUPERUSER CREATEROLE CREATEDB"
 fi
+
+echoby "Running:${bldwht} psql -c \"CREATE USER whwn WITH PASSWORD 'whwn'\" -U postgres"
+echobw "         psql -c \"CREATE DATABASE wehaveweneed WITH OWNER whwn\" -U postgres"
+echobw "         psql -c \"ALTER USER whwn CREATEDB\" -U postgres"
 
 psql -c "CREATE USER whwn WITH PASSWORD 'whwn'" -U postgres
 psql -c "CREATE DATABASE wehaveweneed WITH OWNER whwn" -U postgres
