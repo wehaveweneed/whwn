@@ -15,7 +15,7 @@
 
 # TODO: Guide people in the right direction if something isn't installed
 
-function run { echo ""; . `dirname $0`/$1; }
+function run { . `dirname $0`/$1; echo "";  }
 
 # Utility imports
 run util/colors
@@ -26,6 +26,7 @@ for i in $HOME/.bashrc $HOME/.zshrc $HOME/.profile
 do
   . i > /dev/null 2>&1
 done
+
 
 
 # Run these scripts
