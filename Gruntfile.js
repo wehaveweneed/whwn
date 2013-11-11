@@ -7,7 +7,9 @@ module.exports = function(grunt) {
 
     // Load requirejs and clean grunt tasks
     grunt.loadNpmTasks('grunt-contrib-requirejs');
-    grunt.loadNpmTasks('grunt-clean');
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-sass');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.initConfig({
         pkg: '<json:package.json>',
@@ -30,6 +32,21 @@ module.exports = function(grunt) {
         requirejs: {
             compile: {
                 options: config
+            }
+        },
+
+        sass: {
+            dev: {
+                files: {
+                    'static/compiled/css/screen.css': 'static/sass/screen.scss'
+                }
+            }
+        },
+
+        watch: {
+            sass: {
+                files: ['static/sass/**/*.scss'],
+                tasks: ['sass:dev']
             }
         }
     });
