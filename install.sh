@@ -1,6 +1,4 @@
-#! /bin/zsh
-
-# install.sh - helping people bootstrap their environments for whwn dev
+#! /usr/bin/env bash
 
 # Text color variables.
 txtund=$(tput sgr 0 1)          # Underline
@@ -16,11 +14,21 @@ pass=${bldblu}*${txtrst}
 warn=${bldred}*${txtrst}
 ques=${bldblu}?${txtrst}
 
-function echobr { echo "${bldred}$1${txtrst}" }
-function echobg { echo "${bldgrn}$1${txtrst}" }
-function echobb { echo "${bldblu}$1${txtrst}" }
-function echoby { echo "${bldylw}$1${txtrst}" }
-function echobw { echo "${bldwht}$1${txtrst}" }
+function echobr {
+  echo "${bldred}$1${txtrst}"
+}
+function echobg { 
+  echo "${bldgrn}$1${txtrst}"
+}
+function echobb {
+  echo "${bldblu}$1${txtrst}"
+}
+function echoby {
+  echo "${bldylw}$1${txtrst}"
+}
+function echobw {
+  echo "${bldwht}$1${txtrst}"
+}
 
 ########################
 # DETECT WHAT PLATFORM #
@@ -38,15 +46,9 @@ fi
 
 # We want to make sure this script runs in the same environment
 # that the user has so we wanna source the files
-if [[ -f $HOME/.bashrc ]] ; then
-  . $HOME/.bashrc
-fi
-if [[ -f $HOME/.zshrc ]] ; then
-  . $HOME/.zshrc
-fi
-if [[ -f $HOME/.profile ]] ; then
-  . $HOME/.profile
-fi
+if [ -f $HOME/.bashrc ] ; then . $HOME/.bashrc; fi
+if [ -f $HOME/.zshrc ] ; then . $HOME/.zshrc; fi
+if [ -f $HOME/.profile ] ; then . $HOME/.profile; fi
 
 echo ""
 
@@ -55,6 +57,7 @@ echo ""
 
 echobw "You're going to need Python 2.7 to run this baby... "
 PYTHON_VERSION=`python -c "import sys; sys.stdout.write(sys.version)" | head -n1 | grep -oe "\d\.\d\.\d"`
+
 if [[ $PYTHON_VERSION =~ ^[[:digit:]].[[:digit:]].[[:digit:]]$ ]] ; then
   if [[ $PYTHON_VERSION =~ ^2.7.[[:digit:]]$ ]] ; then
     echobg "    Version $PYTHON_VERSION found. Nice."
@@ -114,12 +117,12 @@ touch ~/.profile
 echobw "Checking to see if virtualenvwrapper is set up properly."
 if [[ -z $(echo $WORKON_HOME) ]] ; then
   echo "    Setting it up for you for you. Running: "
-  echo '        echo "export WORKON_HOME=\$HOME/.virtualenvs" >> ~/.profile'
+  echo "        echo \"export WORKON_HOME=\$HOME/.virtualenvs\" >> ~/.profile"
   # Doing the line add
   echo "export WORKON_HOME=\$HOME/.virtualenvs" >> ~/.profile
 fi
 if [[ $(cat ~/.profile | grep -c "virtualenvwrapper.sh") -eq 0 ]] ; then
-  echo '        echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.profile'
+  echo "        echo \"source /usr/local/bin/virtualenvwrapper.sh\" >> ~/.profile"
   # Doing the line add
   echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.profile
 fi
@@ -198,8 +201,8 @@ echo ""
 echoby "Running:${bldwht} psql -c \"CREATE USER whwn WITH PASSWORD 'whwn'\" -U postgres"
 echobw "         psql -c \"CREATE DATABASE wehaveweneed WITH OWNER whwn\" -U postgres"
 echobw "         psql -c \"ALTER USER whwn CREATEDB\" -U postgres"
-echo ""
 
+echo ""
 if [[ $PLATFORM == "osx" ]] ; then
    echoby "Seems like your platform is osx, which doesn't have a 'postgres' user on most"
    echoby "default installations. Going to try to create the 'postgres' user for you."
@@ -223,7 +226,7 @@ echoby "Running:${bldwht} python manage.py migrate --noinput"
 python manage.py migrate --noinput
 
 echo ""
-echobg "Congratulations! Everything is setup! Please peruse the output of this script to
+echobg "Congratulations! Everything is setup! Please peruse the output of this script to 
 understand exactly what was run."
 exit 0
 
