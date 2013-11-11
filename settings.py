@@ -66,25 +66,21 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = os.path.join(PROJECT_PATH, "public/media")
-STATIC_ROOT = os.path.join(PROJECT_PATH, "public/static")
+MEDIA_ROOT = os.path.join(PROJECT_PATH, "static/media")
+STATIC_ROOT = os.path.join(PROJECT_PATH, "static/compiled")
 
 # Django-compressor settings #
 
 # Use compressed assets
 # COMPRESS_ENABLED = True
 
-COMPRESS_PRECOMPILERS = (
-    ('text/x-scss', 'sass --scss {infile} {outfile}'),
-)
-
-COMPRESS_ROOT = os.path.join(PROJECT_PATH, 'static/')
-COMPRESS_OUTPUT_DIR = 'compiled/'
-
-COMPRESS_CSS_FILTERS = [
-    'compressor.filters.css_default.CssAbsoluteFilter',
-    'compressor.filters.cssmin.CSSMinFilter',
-]
+# COMPRESS_ROOT = os.path.join(PROJECT_PATH, 'static/')
+# COMPRESS_OUTPUT_DIR = 'compiled/'
+# 
+# COMPRESS_CSS_FILTERS = [
+#     'compressor.filters.css_default.CssAbsoluteFilter',
+#     'compressor.filters.cssmin.CSSMinFilter',
+# ]
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -140,7 +136,7 @@ INSTALLED_APPS = (
     'south',
     'whwn',
     'tastypie',
-    'compressor',
+    # 'compressor',
 )
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

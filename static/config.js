@@ -40,6 +40,10 @@ var config = {
     // This prevents unwanted file in the baseUrl from being copied to
     // the compiled/ folder before optimization.
     fileExclusionRegExp: /(^\.|.*test.*|compiled|css)(?!\.js$)/,
+
+    // We need to change this later in production. This just speeds up the
+    // grunt watch task.
+    optimize: "none"
 };
 
 if (typeof exports === 'object') {
