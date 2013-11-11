@@ -1,5 +1,23 @@
 #! /usr/bin/env bash
 
+#
+# Author: lewisf
+# install.sh - This script guides people into bootstrapping their machines to
+# develop on WeHaveWeNeed. Currently, it handles the following things:
+# - Checks for installations of: Python 2.7, PostgreSQL, Pip, virtualenv,
+#   virtualenvwrapper, npm
+# - Creates the proper postgres users and dbs, uses virtualenv, pip, and
+#   npm to bootstrap the development environment needed for WHWN
+#
+# This script is by no means complete, so feel free to make modifications
+# if something is not working on your platform/machine. Just make sure that
+# it doesn't break what's currently working on my/our machine(s).
+
+# TODO: Guide people in the right direction if something isn't installed
+
+##############################
+# Some convenience stuff here.
+##############################
 # Text color variables.
 txtund=$(tput sgr 0 1)          # Underline
 txtbld=$(tput bold)             # Bold
@@ -33,6 +51,7 @@ function echobw {
 ########################
 # DETECT WHAT PLATFORM #
 ########################
+
 if [[ $OSTYPE =~ darwin ]] ; then
   PLATFORM="osx"
 elif [[ $OSTYPE =~ linux-gnu ]] ; then
@@ -43,6 +62,9 @@ elif [[ $OSTYPE =~ linux-gnu ]] ; then
   fi
 fi
 
+#########################
+# Script start!
+#########################
 
 # We want to make sure this script runs in the same environment
 # that the user has so we wanna source the files
