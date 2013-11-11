@@ -1,0 +1,17 @@
+#! /usr/bin/env bash
+
+. `dirname $0`/../util/colors > /dev/null 2>&1
+
+# Step 4: Check for an installation of virtualenv and virtualenvwrapper unless
+# we're already in the virtualenv
+echobw "Now that you have pip, you're going to need virtualenv and virtualenvwrapper!"
+if [[ -z $(echo VIRTUAL_ENV) ]] ; then
+  if [[ -n $(pip list | grep -oe "^virtualenv\s") ]] ; then
+    echobg "    Perfect, you have virtualenv."
+  else
+    echobr "    Looks like you have some work to do. "
+    echoby "    Please install virtualenv and virtualenvwrapper using:"
+    echoby "        sudo pip install virtualenv virtualenvwrapper"
+    exit 1
+  fi
+fi

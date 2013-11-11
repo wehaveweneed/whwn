@@ -1,0 +1,37 @@
+#! /usr/bin/env bash
+
+. `dirname $0`/../util/colors > /dev/null 2>&1
+
+# Step 5: Set up the guys virtualenv/virtualenvwrapper .dotfiles if they
+# don't exist already.
+touch ~/.profile
+echobw "Checking to see if virtualenvwrapper is set up properly."
+if [[ -z $(echo $WORKON_HOME) ]] ; then
+  echo "    Setting it up for you for you. Running: "
+  echo "        echo \"export WORKON_HOME=\$HOME/.virtualenvs\" >> ~/.profile"
+  # Doing the line add
+  echo "export WORKON_HOME=\$HOME/.virtualenvs" >> ~/.profile
+fi
+if [[ $(cat ~/.profile | grep -c "virtualenvwrapper.sh") -eq 0 ]] ; then
+  echo "        echo \"source /usr/local/bin/virtualenvwrapper.sh\" >> ~/.profile"
+  # Doing the line add
+  echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.profile
+fi
+if [[ -z $(echo $PIP_VIRTUALENV_BASE) ]] ; then
+  echo '        echo "export PIP_VIRTUALENV_BASE=\$WORKON_HOME" >> ~/.profile'
+  # Doing the line add
+  echo "export PIP_VIRTUALENV_BASE=\$WORKON_HOME" >> ~/.profile
+fi
+if [[ -z $(echo $PIP_RESPECT_VIRTUALENV) ]] ; then
+  echo '        echo "export PIP_RESPECT_VIRTUALENV=true" >> ~/.profile'
+  # Doing the line add
+  echo "export PIP_RESPECT_VIRTUALENV=true" >> ~/.profile
+fi
+if [[ -z $(echo $VIRTUALENVWRAPPER_PYTHON) ]] ; then
+  echo "        echo \"export VIRTUALENVWRAPPER_PYTHON=`which python`\" >> ~/.profile"
+  # Doing the line add
+  echo "export VIRTUALENVWRAPPER_PYTHON=`which python`" >> ~/.profile
+fi
+echobg "    Virtualenvwrapper is now setup properly. Yes!"
+. ~/.profile
+

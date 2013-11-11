@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+. `dirname $0`/../util/colors > /dev/null 2>&1
+
+# Step 6: Check for an installation of NodeJS and NPM
+echobw "We use NodeJS and npm to bootstrap our javascript packages."
+if type npm >/dev/null 2>&1 ; then
+  echobg "    Npm installation found, moving on!"
+else
+  echobr "    Install version 0.10.* of Node to get npm."
+  echoby "    The suggested method is via Node Version Manager(NVM) which you can find here: "
+  echoby "    https://github.com/creationix/nvm "
+  echoby "    Installation instructions are in the README."
+  exit 1
+fi
