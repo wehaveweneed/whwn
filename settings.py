@@ -66,8 +66,8 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = os.path.join(PROJECT_PATH, "static/media")
-STATIC_ROOT = os.path.join(PROJECT_PATH, "static/compiled")
+MEDIA_ROOT = os.path.join(PROJECT_PATH, "public/media")
+STATIC_ROOT = os.path.join(PROJECT_PATH, "public/static")
 
 # Django-compressor settings #
 
@@ -92,7 +92,7 @@ STATICFILES_FINDERS = (
 )
 
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_PATH, "client"),
+    os.path.join(PROJECT_PATH, "static/compiled"),
 )
 
 TEMPLATE_DIRS = (
