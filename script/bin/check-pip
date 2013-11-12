@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+. `dirname $0`/util/colors > /dev/null 2>&1
+. `dirname $0`/../util/colors > /dev/null 2>&1
+
+# Step 3: Check for a global installation of pip.
+# TODO: Platform specific installation instructions.
+echobw "You're going to need pip to install virtualenv to keep your Python workspace clean..."
+PIP_VERSION=`pip -V | cut -d" " -f2`
+if [[ $PIP_VERSION =~ ^[[:digit:]].[[:digit:]].[[:digit:]]$ ]] ; then
+  echobg "    Version $PIP_VERSION found. Sweet."
+else
+  echobr "    You will need to install pip to continue."
+  exit 1
+fi

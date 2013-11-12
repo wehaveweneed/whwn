@@ -1,0 +1,18 @@
+#! /usr/bin/env bash
+
+. `dirname $0`/../util/colors > /dev/null 2>&1
+
+# Step 2: Check for a correct PostgreSQL installation.
+# TODO: Platform specific installation instructions.
+echobw "We use PostgreSQL as our main data store. Let's see if you have it... "
+POSTGRESQL_VERSION=`psql --version | head -n1 | cut -d" " -f3`
+if [[ $POSTGRESQL_VERSION =~ ^[[:digit:]].[[:digit:]].[[:digit:]]$ ]] ; then
+  echobg "    Version $POSTGRESQL_VERSION found. Hot stuff."
+else
+  if hash psql 2>/dev/null ; then
+	echobr "    You haven't installed PostgreSQL. Please install it to continue!."
+  else
+	echobr "    Looks like you've installed PostgreSQL but it isn't running! Please start it to continue!."
+  fi
+	exit 1
+fi

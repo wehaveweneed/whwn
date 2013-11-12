@@ -1,0 +1,20 @@
+#! /usr/bin/env bash
+
+. `dirname $0`/../util/colors > /dev/null 2>&1
+
+# Step 1: Check for the correct Python version.
+# TODO: Platform specific installation instructions.
+echobw "You're going to need Python 2.7 to run this baby... "
+PYTHON_VERSION=`python -c "import sys; sys.stdout.write(sys.version)" | head -n1 | grep -oe "\d\.\d\.\d"`
+
+if [[ $PYTHON_VERSION =~ ^[[:digit:]].[[:digit:]].[[:digit:]]$ ]] ; then
+  if [[ $PYTHON_VERSION =~ ^2.7.[[:digit:]]$ ]] ; then
+    echobg "    Version $PYTHON_VERSION found. Nice."
+  elif [[ $PYTHON_VERSION =~ ^2.[[:digit:]].[[:digit:]]$ ]] ; then
+    echobr "    You need to upgrade to version 2.7 of Python."
+  fi
+else
+  echobr "    No python found :( you need to install Python version 2.7.*"
+  exit 1
+fi
+

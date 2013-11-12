@@ -1,0 +1,77 @@
+#! /usr/bin/env bash
+
+. `dirname $0`/util/colors || . `dirname $0`/../util/colors > /dev/null 2>&1
+
+# Step 7: If virtualenv is properly installed, we automatically do everything else
+# for them.
+if [[ `echo $VIRTUAL_ENV` =~ whwn ]] ; then
+  echobw "Cool, we'll do the rest from here in this order:"
+  echobb "    1. Use pip to install our Django project requirements"
+  echobb "    2. Setup our PostgreSQL database to properly work"
+  echobb "    3. Sync and Migrate our Django project with our PostgreSQL Database"
+  echobb "    4. Install the requisite javascript packages using npm and bower."
+else
+
+	. ~/.profile
+  if [[ -n $(lsvirtualenv | grep whwn) ]] ; then
+		echobr "You're going to need to get into your virtualenv."
+    echoby "    Please run: workon whwn"
+	else
+	  # Instruct to create a virtualenv
+	  echobr "You're going to need a virtualenv so that you don't crowd your default 
+	  system packages."
+
+	  echobw "Please run the following to create a whwn environment and: "
+	  echoby "    source ~/.profile    # Reload your ~./profile settings we just added."
+	  echoby "    mkvirtualenv --no-site-packages --distribute whwn"
+	  echoby "    workon whwn"
+	  echo ""
+	  echobw "Then rerun ${bldblu}install.sh${bldwht} to continue."
+	fi
+	exit 1
+fi
+
+sleep 3
+echo ""
+
+# Step 8: We're going to install our python packages using pip.
+echoby "Running:${bldwht} pip install -r requirements.txt"
+workon whwn # load our virtualenv so pip installs into it.
+pip install -r requirements.txt
+echo ""
+
+# Step 9: We're going to use our npm setup script to install our npm/bower packages.
+echoby "Running:${bldwht} npm run-script setup"
+npm run-script setup
+echo ""
+
+# We're going to setup postgres for them.
+# Make sure PG_HOST is set or else we can't access postgres
+if [ -z $(echo PG_HOST) ] ; then 
+   export PG_HOST=localhost
+fi
+
+if [ -z $(psql -c "\du" | grep postgres | cut -d" " -f2) ] ; then
+   echoby "Seems like you don't have a 'postgres' user. Going to try to create it for you."
+   echoby "Running: ${bldwht}createdb"
+   echobw "         psql -c \"CREATE USER postgres SUPERUSER CREATEROLE CREATEDB\""
+
+   createdb
+   psql -c "CREATE USER postgres SUPERUSER CREATEROLE CREATEDB"
+fi
+
+echoby "Running:${bldwht} psql -c \"CREATE USER whwn WITH PASSWORD 'whwn'\" -U postgres"
+echobw "         psql -c \"CREATE DATABASE wehaveweneed WITH OWNER whwn\" -U postgres"
+echobw "         psql -c \"ALTER USER whwn CREATEDB\" -U postgres"
+
+psql -c "CREATE USER whwn WITH PASSWORD 'whwn'" -U postgres
+psql -c "CREATE DATABASE wehaveweneed WITH OWNER whwn" -U postgres
+psql -c "ALTER USER whwn CREATEDB" -U postgres
+
+echo ""
+echoby "Running:${bldwht} python manage.py syncdb --noinput"
+python manage.py syncdb --noinput
+
+echo ""
+echoby "Running:${bldwht} python manage.py migrate --noinput"
+python manage.py migrate --noinput

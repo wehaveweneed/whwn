@@ -1,0 +1,33 @@
+##############################
+# Some convenience stuff here.
+##############################
+# Text color variables.
+txtund=$(tput sgr 0 1)          # Underline
+txtbld=$(tput bold)             # Bold
+bldred=${txtbld}$(tput setaf 1) #  red
+bldgrn=${txtbld}$(tput setaf 2) #  green
+bldylw=${txtbld}$(tput setaf 3) #  yellow
+bldblu=${txtbld}$(tput setaf 4) #  blue
+bldwht=${txtbld}$(tput setaf 7) #  white
+txtrst=$(tput sgr0)             # Reset
+info=${bldwht}*${txtrst}        # Feedback
+pass=${bldblu}*${txtrst}
+warn=${bldred}*${txtrst}
+ques=${bldblu}?${txtrst}
+
+function echobr {
+  echo "${bldred}$1${txtrst}"
+}
+function echobg { 
+  echo "${bldgrn}$1${txtrst}"
+}
+function echobb {
+  echo "${bldblu}$1${txtrst}"
+}
+function echoby {
+  echo "${bldylw}$1${txtrst}"
+}
+function echobw {
+  echo "${bldwht}$1${txtrst}"
+}
+

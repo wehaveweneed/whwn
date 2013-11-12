@@ -1,0 +1,45 @@
+#! /usr/bin/env bash
+
+#
+# Author: lewisf
+# install.sh - This script guides people into bootstrapping their machines to
+# develop on WeHaveWeNeed. Currently, it handles the following things:
+# - Checks for installations of: Python 2.7, PostgreSQL, Pip, virtualenv,
+#   virtualenvwrapper, npm
+# - Creates the proper postgres users and dbs, uses virtualenv, pip, and
+#   npm to bootstrap the development environment needed for WHWN
+#
+# This script is by no means complete, so feel free to make modifications
+# if something is not working on your platform/machine. Just make sure that
+# it doesn't break what's currently working on my/our machine(s).
+
+# TODO: Guide people in the right direction if something isn't installed
+
+function run { . `dirname $0`/$1; echo "";  }
+
+# Utility imports
+run util/colors
+
+# We want to make sure this script runs in the same environment
+# that the user has so we wanna source the files
+for i in $HOME/.bashrc $HOME/.zshrc $HOME/.profile
+do
+  . i > /dev/null 2>&1
+done
+
+
+
+# Run these scripts
+run bin/check-python
+run bin/check-postgres
+run bin/check-pip
+run bin/check-virtualenv
+run bin/setup-virtualenv
+run bin/check-npm
+run bin/bootstrap-whwn
+
+echobg "Congratulations! Everything is setup! Please peruse the output of this script to 
+understand exactly what was run."
+exit 0
+
+# DONE! YIPEE!

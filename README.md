@@ -10,7 +10,7 @@ supply coordinators discover and predict supply surplus and famine.
 ***
 ### Getting setup for development
 
-- Run the ```install.sh``` script. It checks to make sure you have all the proper
+- Run the ```script/install``` script. It checks to make sure you have all the proper
 things installed before bootstrapping your development environment.
 - If you're modifying sass, js, you'll want to familiarize yourself with ```grunt```
 and run ```grunt watch```.
