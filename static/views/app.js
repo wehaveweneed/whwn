@@ -13,7 +13,7 @@ define([
             this.render();
         },
         render: function() {
-            this.$el.html("PLACEHOLDER");
+            this.$el.html(this.template);
         }
 
     });

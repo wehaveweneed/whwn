@@ -1,13 +1,20 @@
-define([
-    'backbone',
-    'views/app',
-    'routers/router'
-], function ( Backbone, AppView, Router ) {
-    // Initialize routing and start Backbone.history()
-    return function () {
-        new Router();
-        Backbone.history.start();
+define(['marionette'], function ( Marionette ) {
+    
+    var ItemMan = new Marionette.Application();
+    ItemMan.on('start', function(options) {
+      Backbone.history.start({
+        pushState: true,
+        hashChange: false
+      });
+    });
+    ItemMan.on('initialize:before', function(options) {
+      options.apiRoot = '/api/v1';
+    });
+    ItemMan.on('initialize:after', function(options) {
+      ItemMan.addRegions({
+        mainApp: "#app"
+      });
+    });
 
-        new AppView();
-    };
+    return ItemMan;
 });

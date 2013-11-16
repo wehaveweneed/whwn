@@ -64,10 +64,8 @@ USE_L10N = True
 # Time-aware datetimes
 USE_TZ = True
 
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/var/www/example.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_PATH, "public/media")
-STATIC_ROOT = os.path.join(PROJECT_PATH, "public/static")
+STATIC_ROOT = os.path.join(PROJECT_PATH, "public")
 
 # Django-compressor settings #
 
@@ -86,7 +84,7 @@ STATIC_ROOT = os.path.join(PROJECT_PATH, "public/static")
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#   'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
     'compressor.finders.CompressorFinder',
 )
@@ -169,3 +167,8 @@ LOGGING = {
         },
     }
 }
+
+from django.conf import global_settings
+TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
+    "whwn.util.context_processors.debug_context",
+)

@@ -8,7 +8,7 @@ module.exports = function(grunt) {
     // Load requirejs and clean grunt tasks
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-sass');
+    grunt.loadNpmTasks('grunt-contrib-stylus');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
@@ -29,20 +29,35 @@ module.exports = function(grunt) {
                 options: config
             }
         },
-        sass: {
-            dev: {
+        stylus: {
+            development: {
+                options: {
+                    paths: ['static/components/bootstrap/stylus']
+                },
                 files: {
-                    'static/compiled/css/screen.css': 'static/sass/screen.scss'
+                    'static/compiled/css/screen.css': 'static/stylus/screen.styl'
+                }
+            },
+            production: {
+                options: {
+                    paths: ['static/components/bootstrap/stylus'],
+                    cleancss: true
+                },
+                files: {
+                    'static/compiled/css/screen.css': 'static/stylus/screen.styl'
                 }
             }
         },
         watch: {
-            sass: {
-                files: ['static/sass/**/*.scss'],
-                tasks: ['clean', 'sass:dev']
+            options: {
+                livereload: true
+            },
+            stylus: {
+                files: ['static/stylus/**/*.styl'],
+                tasks: ['clean', 'stylus:development']
             },
             js: {
-                files: ['static/!(compiled)**/*.js'],
+                files: ['static/!(compiled)**/*.js', 'static/*.js', 'Gruntfile.js'],
                 tasks: ['jshint', 'requirejs'],
                 options: {
                     spawn: false,
@@ -57,32 +72,4 @@ module.exports = function(grunt) {
 
     // Alias requirejs to js
     grunt.registerTask('js', 'requirejs');
-
-    // Default runs jshint, compiles js, compiles css
-    // grunt.registerTask('default', 'jshint js sass:dev');
-
-    // CSS task clears old ones and recompiles them
-    // grunt.registerTask('css', 'clean compress');
-
-    // Run django-compressor's compilation. `--force` regardless of DEBUG
-    // grunt.registerTask('compress',
-    //     'Compresses CSS from django_compressor', function () {
-
-    //       var done = this.async(),
-    //           sync = spawn('./manage.py', [ 'compress', '--force']);
-
-    //       sync.stdout.setEncoding('utf8');
-    //       sync.stderr.setEncoding('utf8');
-    //       sync.stdout.on('data', function (data) { grunt.log.write(data); });
-    //       sync.stderr.on('data', function (data) { grunt.log.error(data); });
-
-    //       sync.on('exit', function (code) {
-    //           if (code !== 0) {
-    //               done(false);
-    //           } else {
-    //               done();
-    //           }
-    //       });
-    //     }
-    // );
 };

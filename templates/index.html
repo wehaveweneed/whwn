@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="csrf-param" content="" />
 
-    <title>WeSupply</title>
+    <title>We Have We Need</title>
 
     <meta name="HandheldFriendly" content="True" />
     <meta name="MobileOptimized" content="320" />
@@ -21,32 +21,58 @@
     {% block requirejs %}
         <script>
             var require = {
-                baseUrl: '{{ STATIC_URL }}'
+                baseUrl: '{{ STATIC_URL }}/js'
             };
         </script>
 
-        <script src='{% static "components/requirejs/require.js" %}'></script>
+        <script src='{% static "js/components/requirejs/require.js" %}'></script>
     {% endblock %}
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.0.1/flatly/bootstrap.min.css" />
+    <link rel="stylesheet" href="{% static 'css/screen.css' %}" />
 </head> 
-<body>
+<body style="padding-top: 50px;">
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">We Have We Need</a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
 
-    <main role="main" id="main">
-        <aside id="notifications">
-        </aside>
+  <div class="container" id="app">
+    <div class="starter-template" style="padding: 40px 15px; text-align: center">
+      <h1>We Have We Need</h1>
+      <p class="lead">We help humanitarians manage, share, and talk about supplies in disaster relief situatons.</p>
+    </div>
 
-        <div id="app">
-            Stuff
-        </div>
-    </main>
+  </div><!-- /.container -->
 
-    <script>
-        require(['config'], function () {
-            require(['jquery', 'main'], function (Config, $, App) {
-                $(function () {
-                    project = new App();
-                });
-            });
-        });
-    </script>
+  <script>
+      require(['config'], function () {
+          require(['jquery', 'main'], function ($, ItemMan) {
+              $(document).ready(function(){
+                  ItemMan.init();
+                  window.ItemMan = ItemMan;
+              });
+          });
+      });
+  </script>
+  {% if DEBUG %}
+    <!-- Livereload script -->
+    <script src="//localhost:35729/livereload.js"></script>
+  {% endif %}
 </body>
 <html>

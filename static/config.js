@@ -3,11 +3,12 @@
  * Require.js allows us to configure shortcut alias
  */
 var config = {
-    baseUrl: "/static",
+    baseUrl: "/static/js",
     paths: {
         "jquery"        : "components/jquery/jquery",
         "underscore"    : "components/underscore/underscore",
         "text"          : "components/requirejs-text/text",
+        "marionette"    : "components/backbone.marionette/lib/backbone.marionette",
         "backbone"      : "components/backbone/backbone",
         "mustache"      : "components/mustache/mustache",
     },
@@ -20,8 +21,12 @@ var config = {
             exports: '_'
         },
         backbone: {
-            deps: ['underscore', 'jquery'],
+            deps: ['jquery', 'underscore'],
             exports: 'Backbone'
+        },
+        marionette: {
+            deps: ['jquery', 'underscore', 'backbone'],
+            exports: 'Marionette'
         },
         mustache: {
             exports: 'Mustache'
