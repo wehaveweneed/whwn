@@ -3,11 +3,11 @@ define([
     'backbone'
 ], function( $, Backbone ) {
 
-    var Router = Backbone.Router.extend({
+    var Router = Backbone.Marionette.AppRouter.extend({
         routes: {
-          '': 'home'
+          "login": "login"
         },
-        home: function() {
+        login : function() {
           
         }
     });

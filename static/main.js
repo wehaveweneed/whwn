@@ -1,4 +1,4 @@
-define(['marionette'], function ( Marionette ) {
+define(['marionette', 'views/login'], function ( Marionette, LoginView ) {
     
     var ItemMan = new Marionette.Application();
     ItemMan.on('start', function(options) {
@@ -8,12 +8,15 @@ define(['marionette'], function ( Marionette ) {
       });
     });
     ItemMan.on('initialize:before', function(options) {
-      options.apiRoot = '/api/v1';
+      ItemMan.addRegions({
+        NavigationRegion: "#navigation",
+        MainRegion: "#application",
+        FooterRegion: "#footer"
+      });
     });
     ItemMan.on('initialize:after', function(options) {
-      ItemMan.addRegions({
-        mainApp: "#app"
-      });
+      var loginView = new LoginView();
+      ItemMan.MainRegion.show(loginView);
     });
 
     return ItemMan;

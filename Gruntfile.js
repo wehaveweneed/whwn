@@ -57,7 +57,8 @@ module.exports = function(grunt) {
                 tasks: ['clean', 'stylus:development']
             },
             js: {
-                files: ['static/!(compiled)**/*.js', 'static/*.js', 'Gruntfile.js'],
+                files: ['static/!(compiled)**/*.js', 'static/!(compiled)**/*.html',
+                        'static/*.js', 'Gruntfile.js'],
                 tasks: ['jshint', 'requirejs'],
                 options: {
                     spawn: false,
