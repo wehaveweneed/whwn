@@ -9,6 +9,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-requirejs');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-stylus');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
@@ -32,10 +33,11 @@ module.exports = function(grunt) {
         stylus: {
             development: {
                 options: {
-                    paths: ['static/components/bootstrap/stylus']
+                    paths: ['static/components/bootstrap-stylus/stylus']
                 },
                 files: {
-                    'static/compiled/css/screen.css': 'static/stylus/screen.styl'
+                    'static/compiled/css/screen.css': 'static/stylus/screen.styl',
+                    'static/compiled/css/bootstrap.css': 'static/components/bootstrap-stylus/stylus/bootstrap.styl'
                 }
             },
             production: {
@@ -44,8 +46,28 @@ module.exports = function(grunt) {
                     cleancss: true
                 },
                 files: {
-                    'static/compiled/css/screen.css': 'static/stylus/screen.styl'
+                    'static/compiled/css/screen.css': 'static/stylus/screen.styl',
+                    'static/compiled/css/bootstrap.css': 'static/components/bootstrap-stylus/stylus/bootstrap.styl'
                 }
+            }
+        },
+        copy: {
+            "fa-css": {
+                src: 'static/components/font-awesome/css/font-awesome.css',
+                dest: 'static/compiled/css/font-awesome.css'
+            },
+            "fa-fonts": {
+                options: {
+                    basePath: 'static/components/font-awesome/fonts'
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'static/components/font-awesome/fonts/',
+                    dest: 'static/compiled/fonts/',
+                    src:['fontawesome-webfont.woff',
+                         'fontawesome-webfont.ttf',
+                         'fontawesome-webfont.svg']
+                }]
             }
         },
         watch: {
@@ -54,11 +76,11 @@ module.exports = function(grunt) {
             },
             stylus: {
                 files: ['static/stylus/**/*.styl'],
-                tasks: ['clean', 'stylus:development']
+                tasks: ['stylus:development']
             },
             js: {
                 files: ['static/!(compiled)**/*.js', 'static/!(compiled)**/*.html',
-                        'static/*.js', 'Gruntfile.js'],
+                        'static/*.js'],
                 tasks: ['jshint', 'requirejs'],
                 options: {
                     spawn: false,
@@ -73,4 +95,5 @@ module.exports = function(grunt) {
 
     // Alias requirejs to js
     grunt.registerTask('js', 'requirejs');
+    grunt.registerTask('default', ['stylus:development', 'js', 'copy']);
 };

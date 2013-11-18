@@ -11,13 +11,121 @@
    0. General
    ============================================================================= */
 
+html, body {
+  height: 100%
+  background: #242628
+}
+
 body {
- background: white
+  #application {
+    height: 100%
+    background: #242628
+  }
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@-moz-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@-webkit-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@-ms-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* =============================================================================
-   1. Login
+   1. Sign In
    ============================================================================= */
+
+#signin-form-container {
+  max-width: 600px
+  height: 90%
+  margin: 0 auto
+  padding: 0
+  display: table
+  -webkit-animation: fadein 0.25s
+  -moz-animation: fadein 0.25s
+  animation: fadein 0.25s
+
+  .form-inline {
+    box-sizing: border-box
+    max-width: 600px
+    display: table-cell
+    vertical-align: middle
+
+    .username-wrap, .password-wrap {
+      display: inline-block 
+      border: 1px solid #ccc
+      padding-left: 10px
+      border-radius: 3px
+      position: relative
+
+      input {
+        background: transparent
+        width: 230px
+        font-size: 14px
+        color: #ddd
+        -webkit-transition: ease 0.25s
+        -moz-transition: ease 0.25s
+        transiton: ease 0.25s
+        border: none
+        margin-left: 14px
+        padding-left: 5px
+      }
+      input:focus {
+        outline: 0
+      }
+    }
+
+    .username-wrap:before{
+      font-family: FontAwesome
+      box-sizing: border-box
+      height: auto
+      width: auto
+      content: "\f007"
+      color: #999
+      position: absolute
+      font-size: 14px
+      left: 8px
+      bottom: 7px
+    }
+
+    .password-wrap:before{
+      font-family: FontAwesome
+      box-sizing: border-box
+      height: auto
+      width: auto
+      content: "\f023"
+      color: #999
+      position: absolute
+      font-size: 14px
+      left: 8px
+      bottom: 7px
+    }
+
+    button {
+      text-transform: uppercase
+      box-sizing: border-box
+      font-size: 10px
+      padding: 9px
+    }
+
+    section.meta {
+      font-size: 12px
+      padding: 5px 2px
+      a {
+        color: #999
+      }
+    }
+  }
+}
 
 /* =============================================================================
    2. Signup

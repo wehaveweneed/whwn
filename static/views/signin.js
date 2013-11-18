@@ -1,9 +1,11 @@
 define([
   'jquery',
   'marionette',
-  'text!templates/login.html'
+  'text!templates/signin.html'
 ], function($, Marionette, LoginTpl) {
-  var Login = Marionette.ItemView.extend({
+  var Signin = Marionette.ItemView.extend({
+      tagName: "div",
+      id: "signin-form-container",
       template: function() {
         return _.template(LoginTpl);
       },
@@ -12,5 +14,5 @@ define([
       }
   });
 
-  return Login;
+  return Signin;
 });

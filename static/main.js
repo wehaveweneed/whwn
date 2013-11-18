@@ -1,4 +1,4 @@
-define(['marionette', 'views/login'], function ( Marionette, LoginView ) {
+define(['marionette', 'views/signin'], function ( Marionette, SignInView ) {
     
     var ItemMan = new Marionette.Application();
     ItemMan.on('start', function(options) {
@@ -15,8 +15,7 @@ define(['marionette', 'views/login'], function ( Marionette, LoginView ) {
       });
     });
     ItemMan.on('initialize:after', function(options) {
-      var loginView = new LoginView();
-      ItemMan.MainRegion.show(loginView);
+      ItemMan.MainRegion.show(new SignInView());
     });
 
     return ItemMan;
