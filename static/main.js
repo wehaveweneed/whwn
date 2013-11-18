@@ -1,13 +1,9 @@
-define(['marionette', 'views/signin'], function ( Marionette, SignInView ) {
+define(['marionette', 'views/signin', 'routers/router'],
+function ( Marionette, SignInView, ItemManRouter ) {
     
     var ItemMan = new Marionette.Application();
-    ItemMan.on('start', function(options) {
-      Backbone.history.start({
-        pushState: true,
-        hashChange: false
-      });
-    });
     ItemMan.on('initialize:before', function(options) {
+      ItemMan.router = new ItemManRouter();
       ItemMan.addRegions({
         NavigationRegion: "#navigation",
         MainRegion: "#application",
@@ -15,8 +11,12 @@ define(['marionette', 'views/signin'], function ( Marionette, SignInView ) {
       });
     });
     ItemMan.on('initialize:after', function(options) {
-      ItemMan.MainRegion.show(new SignInView());
+      // Temporarily navigate here for dev purposes
+      Backbone.history.start({
+        pushState: true
+      });
     });
 
+    window.ItemMan = ItemMan;
     return ItemMan;
 });

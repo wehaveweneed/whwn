@@ -76,7 +76,7 @@ module.exports = function(grunt) {
             },
             stylus: {
                 files: ['static/stylus/**/*.styl'],
-                tasks: ['stylus:development']
+                tasks: ['clean', 'stylus:development', 'copy']
             },
             js: {
                 files: ['static/!(compiled)**/*.js', 'static/!(compiled)**/*.html',
