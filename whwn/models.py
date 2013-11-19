@@ -102,6 +102,7 @@ class User(AbstractUser, TimestampedModel, LocatableModel):
     phone_number = models.CharField(max_length=32, blank=True, null=True)
     email_verified = models.BooleanField(default=False)
     phone_verified = models.BooleanField(default=False)
+    full_name = models.CharField(max_length=71, blank=True)
     items = generic.GenericRelation('whwn.Item')
 
     def join_team(self, team):
