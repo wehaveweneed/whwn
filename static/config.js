@@ -22,7 +22,17 @@ var config = {
         },
         backbone: {
             deps: ['jquery', 'underscore'],
-            exports: 'Backbone'
+            exports: 'Backbone',
+            init: function (jquery, underscore) {
+                var oldSync = this.Backbone.sync;
+                this.Backbone.sync = function(method, model, options) {
+                    options.beforeSend = function(xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', window.csrf_token);
+                        xhr.setRequestHeader('Content-type', 'application/json');
+                    };
+                    return oldSync(method, model, options);
+                };
+            }
         },
         marionette: {
             deps: ['jquery', 'underscore', 'backbone'],

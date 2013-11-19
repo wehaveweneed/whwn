@@ -15,5 +15,5 @@ v1_api.register(UserResource())
 
 urlpatterns = patterns('whwn.views',
     url(r'^api/', include(v1_api.urls)),
-    url(r'^', TemplateView.as_view(template_name="index.html")),
+    url(r'', TemplateView.as_view(template_name="index.html")),
 )
