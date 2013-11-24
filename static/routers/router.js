@@ -7,9 +7,9 @@ define([
 
     var Router = Backbone.Marionette.AppRouter.extend({
         routes: {
-          "": "signin",
           "signin": "signin",
-          "signup": "signup"
+          "signup": "signup",
+          "signout": "signout"
         },
         signin : function() {
           ItemMan.MainRegion.show(new SignInView());

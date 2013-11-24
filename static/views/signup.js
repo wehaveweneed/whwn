@@ -17,31 +17,25 @@ define([
     },
     submit: function(e) {
       e.preventDefault();
-      fullname = $("input[name=fullname]").val();
-      email = $("input[name=email]").val();
-      username = $("input[name=username]").val();
-      raw_password = $("input[name=raw_password]").val();
 
       $.ajax({
         type: "POST",
-        url: "/api/v1/user/?format=json",
+        url: "/api/v1/user/signup/",
         dataType: "json",
-        beforeSend: function (xhr) {
-          xhr.setRequestHeader("Content-type", "application/json");
-        },
         data: JSON.stringify({
-          "fullname": fullname,
-          "email": email,
-          "username": username,
-          "raw_password": raw_password
+          "full_name": $("input[name=fullname]").val(),
+          "email": $("input[name=email]").val(),
+          "username": $("input[name=username]").val(),
+          "raw_password": $("input[name=password]").val()
         }),
         error: function (data) {
           console.log(data);
         },
         success: function (data) {
-          ItemMan.vent.trigger('user:create', data);
+          ItemMan.vent.trigger('session:create', data);
         }
       });
+      return false;
     }
   });
 

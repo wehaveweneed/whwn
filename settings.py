@@ -172,3 +172,6 @@ from django.conf import global_settings
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     "whwn.util.context_processors.debug_context",
 )
+
+APPEND_SLASH = False
+TASTYPIE_ALLOW_MISSING_SLASH = True

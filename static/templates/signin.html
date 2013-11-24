@@ -1,12 +1,13 @@
-<form role="form" class="form-inline">
+<form role="form" class="form-inline" id="signin-form" autocomplete="off">
   <div class="username-wrap">
-    <input type="text" class="form-control" placeholder="Username">
+    <input type="text" class="form-control" placeholder="Username" name="username">
   </div>
   <div class="password-wrap">
-    <input type="password" class="form-control" placeholder="Password">
+    <input type="password" class="form-control" placeholder="Password" name="password">
   </div>
   <button type="submit" class="btn btn-primary">Log In</button>
   <section class="meta">
     <a class="forgotten-password" href="/forgotten/">Forgotten Password?</a>
+    <a href="/signout" id="signout">Sign out</a>
   </section>
 </form>
