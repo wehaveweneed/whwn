@@ -33,19 +33,6 @@ define([
             }
           });
           return false;
-        },
-        signout : function (e) {
-          $.ajax({
-            type: "POST",
-            url: "/api/v1/user/signout/",
-            error: function (data) {
-              console.log(data);
-            },
-            success: function (data) {
-              ItemMan.vent.trigger('session:destroy', data);
-            }
-          });
-          return false;
         }
     });
 

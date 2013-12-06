@@ -101,7 +101,8 @@ class UserResource(ModelResource):
 
     def signin(self, request, **kwargs):
         '''
-        Login a user.
+        Sign in a user given a username and password.
+        Expects json in request.body
         '''
         self.method_check(request, allowed=['post'])
 
@@ -119,7 +120,8 @@ class UserResource(ModelResource):
 
     def signout(self, request, **kwargs):
         '''
-        Logout a user.
+        Logout a user by grabbing the user id out of the
+        session if the session is a valid session.
         '''
         self.method_check(request, allowed=['post'])
 

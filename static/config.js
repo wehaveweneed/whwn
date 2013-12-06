@@ -10,7 +10,7 @@ var config = {
         "text"          : "components/requirejs-text/text",
         "marionette"    : "components/backbone.marionette/lib/backbone.marionette",
         "backbone"      : "components/backbone/backbone",
-        "mustache"      : "components/mustache/mustache",
+        "handlebars"    : "components/handlebars/handlebars",
     },
 
     shim : {
@@ -38,8 +38,8 @@ var config = {
             deps: ['jquery', 'underscore', 'backbone'],
             exports: 'Marionette'
         },
-        mustache: {
-            exports: 'Mustache'
+        handlebars: {
+            exports: 'Handlebars'
         }
     },
 
