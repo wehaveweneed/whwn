@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
+from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from tastypie.api import Api
 from whwn.api import (ItemResource, SKUResource, CategoryResource,
                         MessageResource, TeamResource, UserResource)
@@ -15,5 +16,5 @@ v1_api.register(UserResource())
 
 urlpatterns = patterns('whwn.views',
     url(r'^api/', include(v1_api.urls)),
-    url(r'^', TemplateView.as_view(template_name="index.html")),
+    url(r'^i/', TemplateView.as_view(template_name="index.html")),
 )

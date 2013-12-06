@@ -1,0 +1,207 @@
+/*
+ * These are the styles that pertain to elements on the login/signup screens
+ *
+ * 0. General
+ * 1. Login
+ * 2. Signup
+ * 
+ */
+
+/* =============================================================================
+   0. General
+   ============================================================================= */
+
+html, body
+  height: 100%
+  background: #242628
+
+body #application
+  height: 100%
+  background: #222124
+
+@keyframes fadein
+  from { opacity: 0; }
+  to   { opacity: 1; }
+
+/* =============================================================================
+   1. Sign In
+   ============================================================================= */
+
+#signin-form-container {
+  max-width: 600px
+  height: 90%
+  margin: 0 auto
+  padding: 0
+  display: table
+  animation: fadein 0.25s
+
+  .form-inline {
+    box-sizing: border-box
+    max-width: 600px
+    display: table-cell
+    vertical-align: middle
+
+    .username-wrap, .password-wrap {
+      display: inline-block 
+      border: 1px solid #ccc
+      padding-left: 10px
+      border-radius: 3px
+      position: relative
+
+      input {
+        background: transparent
+        width: 230px
+        font-size: 14px
+        color: #ddd
+        transiton: ease 0.25s
+        border: none
+        margin-left: 14px
+        padding-left: 5px
+      }
+      input:focus {
+        outline: 0
+      }
+    }
+
+    .username-wrap:before{
+      font-family: FontAwesome
+      box-sizing: border-box
+      content: "\f007"
+      color: #999
+      position: absolute
+      font-size: 14px
+      left: 9px
+      bottom: 7px
+    }
+
+    .password-wrap:before{
+      font-family: FontAwesome
+      box-sizing: border-box
+      content: "\f023"
+      color: #999
+      position: absolute
+      font-size: 14px
+      left: 9px
+      bottom: 7px
+    }
+
+    button {
+      text-transform: uppercase
+      box-sizing: border-box
+      font-size: 10px
+      padding: 9px
+    }
+
+    section.meta {
+      font-size: 12px
+      padding: 5px 2px
+      a {
+        color: #999
+      }
+    }
+  }
+}
+
+/* =============================================================================
+   2. Signup
+   ============================================================================= */
+
+#signup-form-container {
+  max-width: 600px
+  height: 90%
+  margin: 0 auto
+  padding: 0
+  display: table
+  animation: fadein 0.25s
+
+  .form {
+    box-sizing: border-box
+    max-width: 300px
+    display: table-cell
+    vertical-align: middle
+
+    .username-wrap, .password-wrap, .fullname-wrap, .email-wrap {
+      display: inline-block 
+      border: 1px solid #ccc
+      padding-left: 10px
+      border-radius: 3px
+      position: relative
+      margin-bottom: 10px
+
+      input {
+        background: transparent
+        width: 274px
+        font-size: 14px
+        color: #ddd
+        transiton: ease 0.25s
+        border: none
+        margin-left: 14px
+        padding-left: 5px
+      }
+      input:focus {
+        outline: 0
+      }
+    }
+
+    .username-wrap:before{
+      font-family: FontAwesome
+      box-sizing: border-box
+      content: "\f007"
+      color: #999
+      position: absolute
+      font-size: 14px
+      left: 9px
+      bottom: 7px
+    }
+
+    .password-wrap:before{
+      font-family: FontAwesome
+      box-sizing: border-box
+      content: "\f023"
+      color: #999
+      position: absolute
+      font-size: 14px
+      left: 9px
+      bottom: 7px
+    }
+
+    .fullname-wrap:before{
+      font-family: FontAwesome
+      box-sizing: border-box
+      content: "\f040"
+      color: #999
+      position: absolute
+      font-size: 14px
+      left: 9px
+      bottom: 7px
+    }
+
+    .email-wrap:before{
+      font-family: FontAwesome
+      box-sizing: border-box
+      content: "\f0e0"
+      color: #999
+      position: absolute
+      font-size: 10px
+      line-height: 18px
+      left: 9px
+      bottom: 7px
+    }
+
+    button {
+      text-transform: uppercase
+      box-sizing: border-box
+      width: 100%
+      font-size: 10px
+      padding: 9px
+    }
+
+    section.meta {
+      font-size: 12px
+      padding: 5px 2px
+      a {
+        color: #999
+      }
+    }
+  }
+}

@@ -1,14 +1,21 @@
 define([
     'jquery',
-    'backbone'
-], function( $, Backbone ) {
+    'backbone',
+    'views/signin',
+    'views/signup'
+], function( $, Backbone, SignInView, SignUpView ) {
 
     var Router = Backbone.Marionette.AppRouter.extend({
         routes: {
-          "login": "login"
+          "signin": "signin",
+          "signup": "signup",
+          "signout": "signout"
         },
-        login : function() {
-          
+        signin : function() {
+          ItemMan.MainRegion.show(new SignInView());
+        },
+        signup : function() {
+          ItemMan.MainRegion.show(new SignUpView());
         }
     });
 

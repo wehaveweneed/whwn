@@ -21,8 +21,18 @@ var config = {
             exports: '_'
         },
         backbone: {
-            deps: ['jquery', 'underscore'],
-            exports: 'Backbone'
+            deps: ['jquery', 'underscore', 'helpers/cookie_util'],
+            exports: 'Backbone',
+            init: function (jquery, underscore, cookie) {
+                var oldSync = this.Backbone.sync;
+                this.Backbone.sync = function(method, model, options) {
+                    options.beforeSend = function(xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', cookie.find('csrftoken'));
+                        xhr.setRequestHeader('Content-type', 'application/json');
+                    };
+                    return oldSync(method, model, options);
+                };
+            }
         },
         marionette: {
             deps: ['jquery', 'underscore', 'backbone'],

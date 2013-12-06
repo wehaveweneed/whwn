@@ -10,6 +10,7 @@ from django.db.models.signals import pre_delete
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 from whwn.util.models import TimestampedModel, LocatableModel
+from tastypie.models import create_api_key
 
 
 class Item(TimestampedModel, LocatableModel):
@@ -255,3 +256,5 @@ class User(AbstractUser, TimestampedModel, LocatableModel):
         else:
             raise Exception("This user is not a member of the intended recipient",
                     "team.")
+
+models.signals.post_save.connect(create_api_key, sender=User)
